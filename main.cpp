@@ -104,8 +104,7 @@ int main(){
     for (auto j : boxes){
       DrawRectangleRec(j, RED);
     }
-    DrawRectangleRec(collision, GREEN);
-    
+    // DrawRectangleRec(collision, GREEN);
 
     EndDrawing();
     
@@ -123,21 +122,15 @@ void Resolve_Collision(std::shared_ptr<Player>player, std::vector<Rectangle>boxe
       collided = CheckCollisionRecs(player->collider, i);
       collision = GetCollisionRec(player->collider, i);
 
-      if (collision.width != 0 && collision.height != 0){
-
-        // std::cout << collision.width << "," << collision.height << std::endl;
+      if (collision.width != 0 and collision.height != 0){
         sign.x = player->collider.x + player->collider.width/2 < i.x + i.width/2 ? 1 : -1;
         sign.y = player->collider.y + player->collider.height/2 < i.y + i.height/2 ? 1 : -1;
         std::cout << sign.x << sign.y << std::endl;
-        // player->speed = 0;
-
         if (collision.height < player->size.y/4 and sign.y == 1){
           player->position.y -= collision.height;
-
           player->position.y = i.y - player->size.y;
         }
         else if (collision.height < player->size.y/4 && player->velocity.y < 0 and sign.y == -1){
-          player->velocity.y = 0;
           player->velocity.y = 1;
         }
         if (collision.width < player->size.x/4 && player->velocity.x > 0 and sign.x == 1){
@@ -148,12 +141,8 @@ void Resolve_Collision(std::shared_ptr<Player>player, std::vector<Rectangle>boxe
         }
              }
       else{
-
-        // sign = {0,0};
         std::cout << sign.x << sign.y << std::endl;
-
         player->blocked = false;
-        // std::cout << "no collision" << std::endl;
       }
     }
 }
