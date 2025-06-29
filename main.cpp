@@ -106,7 +106,7 @@ int main(){
     for (auto j : boxes){
       DrawRectangleRec(j, RED);
     }
-    // DrawRectangleRec(collision, GREEN);
+    DrawRectangleRec(collision, GREEN);
 
     EndDrawing();
     
@@ -136,11 +136,9 @@ void Resolve_Collision(std::shared_ptr<Player>player, std::vector<Rectangle>boxe
         }
         if (collision.width < player->size.x/4 and sign.x == 1){
           player->position.x -= collision.width;
-          player->velocity.y = 1;
         }
         else if (collision.width < player->size.x/4  and sign.x == -1){
           player->position.x += collision.width;
-          player->velocity.y = 1;
         }
       }
        
