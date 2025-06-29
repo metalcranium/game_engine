@@ -81,6 +81,8 @@ int main(){
   std::shared_ptr<Player>player = std::make_shared<Player>();
   std::vector<Rectangle>boxes;
   Rectangle collision;
+  Rectangle ground = {0, 750, scr_width, 50};
+  boxes.push_back(ground);
   
   while (!WindowShouldClose()){
     // update
@@ -128,21 +130,19 @@ void Resolve_Collision(std::shared_ptr<Player>player, std::vector<Rectangle>boxe
         std::cout << sign.x << sign.y << std::endl;
         if (collision.height < player->size.y/4 and sign.y == 1){
           player->position.y -= collision.height;
-          player->position.y = i.y - player->size.y;
         }
-        else if (collision.height < player->size.y/4 && player->velocity.y < 0 and sign.y == -1){
+        else if (collision.height < player->size.y/4  and sign.y == -1){
+          player->position.y += collision.height;
+        }
+        if (collision.width < player->size.x/4 and sign.x == 1){
+          player->position.x -= collision.width;
           player->velocity.y = 1;
         }
-        if (collision.width < player->size.x/4 && player->velocity.x > 0 and sign.x == 1){
-          player->velocity.x = -sign.x;
+        else if (collision.width < player->size.x/4  and sign.x == -1){
+          player->position.x += collision.width;
+          player->velocity.y = 1;
         }
-        else if (collision.width < player->size.x/4 && player->velocity.x < 0 and sign.x == -1){
-          player->velocity.x = -sign.x;
-        }
-             }
-      else{
-        std::cout << sign.x << sign.y << std::endl;
-        player->blocked = false;
       }
+       
     }
 }
