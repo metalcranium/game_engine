@@ -9,14 +9,34 @@
 #define delta GetFrameTime()
 #define fps 60
 
-class Player{
-  public:
+class RigidBody2D{
+  public: 
     Vector2 velocity;
     Vector2 position;
     Vector2 size;
+    Rectangle collider;
+
+    RigidBody2D(){
+      
+    }
+    ~RigidBody2D(){
+      
+    }
+    virtual void update(){
+      
+    }
+    virtual void draw(){
+      
+    }
+};
+class Player : public RigidBody2D{
+  public:
+    // Vector2 velocity;
+    // Vector2 position;
+    // Vector2 size;
     const float SPEED = 200;
     float speed;
-    Rectangle collider;
+    // Rectangle collider;
     bool blocked;
 
     Player(){
@@ -62,17 +82,21 @@ class Player{
       if (IsKeyDown(KEY_UP)){
         velocity.y = -1;
       }
-      // else if (IsKeyDown(KEY_DOWN)){
-      //   velocity.y = 1;
-      // }
+      else if (IsKeyDown(KEY_DOWN)){
+        velocity.y = 1;
+      }
       else{
         velocity.y = 1;
       }
+      // else{
+      //   velocity.y = 0;
+      // }
       
     }
 };
 
-void Resolve_Collision(std::shared_ptr<Player>player, std::vector<Rectangle>boxes);
+void Resolve_World_Collision(std::shared_ptr<Player>player, std::vector<Rectangle>boxes);
+
 int main(){
   InitWindow(scr_width, scr_height, "Collisions");
   SetTargetFPS(fps);
@@ -95,7 +119,7 @@ int main(){
     for (auto i : boxes){
       collision = GetCollisionRec(player->collider, i);
     }
-    Resolve_Collision(player, boxes);
+    Resolve_World_Collision(player, boxes);
 
 
     // draw
@@ -114,33 +138,36 @@ int main(){
   CloseWindow();
   
 }
-void Resolve_Collision(std::shared_ptr<Player>player, std::vector<Rectangle>boxes){
-  
+void Resolve_World_Collision(std::shared_ptr<Player>player, std::vector<Rectangle>boxes){
   bool collided = false;
   Rectangle collision;
-
   Vector2 sign = {0,0};
+  std::cout << sign.x << "," << sign.y << std::endl;
     for (Rectangle i : boxes){
       collided = CheckCollisionRecs(player->collider, i);
       collision = GetCollisionRec(player->collider, i);
 
-      if (collision.width != 0 and collision.height != 0){
+      if (collided){//(collision.width != 0 and collision.height != 0){
         sign.x = player->collider.x + player->collider.width/2 < i.x + i.width/2 ? 1 : -1;
         sign.y = player->collider.y + player->collider.height/2 < i.y + i.height/2 ? 1 : -1;
         std::cout << sign.x << sign.y << std::endl;
-        if (collision.height < player->size.y/4 and sign.y == 1){
-          player->position.y -= collision.height;
+        if (sign.y == 1){
+          if (collision.width < player->size.x/8 != 0){
+            player->position.x -= collision.width * sign.x;
+          }
+          else{
+          player->position.y -= collision.height * sign.y;
+          }
         }
-        else if (collision.height < player->size.y/4  and sign.y == -1){
-          player->position.y += collision.height;
+        else if (sign.y == -1){
+          if (collision.width < player->size.y/8){
+            player->position.x -= collision.width * sign.x;
+          }
+          else{
+          player->position.y -= collision.height * sign.y;
+          }
         }
-        if (collision.width < player->size.x/4 and sign.x == 1){
-          player->position.x -= collision.width;
-        }
-        else if (collision.width < player->size.x/4  and sign.x == -1){
-          player->position.x += collision.width;
-        }
+
       }
-       
     }
 }
