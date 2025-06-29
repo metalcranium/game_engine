@@ -8,7 +8,13 @@
 #define scr_height 800
 #define delta GetFrameTime()
 #define fps 60
+class RigidBody2D;
 
+class World{
+  public:
+    std::vector<RigidBody2D>static_bodies;
+    std::vector<RigidBody2D>dynamic_bodies;
+};
 class RigidBody2D{
   public: 
     Vector2 velocity;
@@ -17,10 +23,10 @@ class RigidBody2D{
     Rectangle collider;
 
     RigidBody2D(){
-      
+      std::cout << "rigid body created" << std::endl;
     }
     ~RigidBody2D(){
-      
+      std::cout << "rigid body destroyed" << std::endl;
     }
     virtual void update(){
       
@@ -31,12 +37,8 @@ class RigidBody2D{
 };
 class Player : public RigidBody2D{
   public:
-    // Vector2 velocity;
-    // Vector2 position;
-    // Vector2 size;
     const float SPEED = 200;
     float speed;
-    // Rectangle collider;
     bool blocked;
 
     Player(){
