@@ -2,6 +2,5 @@
 
 g++ -o main main.cpp \
 -lraylib \
--lbox2d \
 
 ./main
