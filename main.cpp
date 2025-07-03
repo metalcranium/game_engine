@@ -7,6 +7,7 @@
 #define scr_width 1200
 #define scr_height 800
 #define delta GetFrameTime()
+#define gravity 100
 #define fps 60
 
 class RigidBody2D;
@@ -40,15 +41,21 @@ class Player : public RigidBody2D{
   public:
     const float SPEED = 200;
     float speed;
+    float fall;
     bool blocked;
+    bool is_grounded;
+    bool can_jump;
 
     Player(){
       velocity = {0,1};
       position = {600, 0};
       size = {32, 32};
       speed = SPEED;
+      fall = gravity;
       collider = {position.x, position.y, size.x, size.y};
       blocked = false;
+      is_grounded = false;
+      can_jump = false;
       std::cout << "player created" << std::endl;
     }
     ~Player(){
@@ -58,16 +65,11 @@ class Player : public RigidBody2D{
     void update(){
       Vector2Normalize(velocity);
       position.x += velocity.x * speed * delta;
-      position.y += velocity.y * 100 * delta;
+      position.y += velocity.y * fall * delta;
+      std::cout << "is grounded: " << is_grounded << std::endl;
 
       collider = {position.x, position.y, size.x, size.y};
       input();
-      if (blocked) {
-        speed = 0;
-      }
-      else{
-        speed = SPEED;
-      }
     }
     void draw(){
       DrawRectangle(position.x, position.y, size.x, size.y, BLUE);
@@ -82,18 +84,23 @@ class Player : public RigidBody2D{
       else{
         velocity.x = 0;
       }
-      if (IsKeyPressed(KEY_UP)){
+      if (IsKeyPressed(KEY_UP) and can_jump == true){
         velocity.y = -1;
       }
-      else if (IsKeyDown(KEY_DOWN)){
-        velocity.y = 1;
-      }
-      else{
-        velocity.y += 1 * delta;
-      }
+      velocity.y += 1 * delta;
+      // velocity.y = 1;
+      // else if (IsKeyDown(KEY_DOWN)){
+      //   velocity.y = 1;
+      // }
       // else{
       //   velocity.y = 0;
       // }
+      if (is_grounded){
+        can_jump = true;
+      }
+      else{
+        can_jump = false;
+      }
       
     }
 };
@@ -154,30 +161,31 @@ int main(){
   
 }
 void Resolve_World_Collision(std::shared_ptr<Player>player, std::vector<Rectangle>boxes){
-  bool collided = false;
-  Rectangle collision;
   Vector2 sign = {0,0};
-  std::cout << sign.x << "," << sign.y << std::endl;
-    for (Rectangle i : boxes){
-      collided = CheckCollisionRecs(player->collider, i);
-      collision = GetCollisionRec(player->collider, i);
-
+  bool collided;
+  Rectangle collision;
+    // for (Rectangle i : boxes){
+    for (int i = 0; i < boxes.size(); i++){
+      collided = CheckCollisionRecs(player->collider, boxes[i]);
+      collision = GetCollisionRec(player->collider, boxes[i]);
       if (collided){//(collision.width != 0 and collision.height != 0){
-        sign.x = player->collider.x + player->collider.width < i.x + i.width ? 1 : -1;
-        sign.y = player->collider.y + player->collider.height < i.y + i.height ? 1 : -1;
-        std::cout << sign.x << sign.y << std::endl;
-          // if (collision.height < player->size.y/8){
-          //   player->position.y -= collision.height * sign.y;
-          // }
-          // if (collision.width < player->size.x/8){
-          //   player->position.x -= collision.width * sign.x;
-          // }
+        sign.x = player->collider.x + player->collider.width < boxes[i].x + boxes[i].width ? 1 : -1;
+        sign.y = player->collider.y + player->collider.height < boxes[i].y + boxes[i].height ? 1 : -1;
           if (collision.width < collision.height){
             player->position.x -= collision.width * sign.x;
+            player->velocity = {0,0};
+          }
+          if (collision.height < collision.width){
+            std::cout << "collision" << std::endl;
+            player->is_grounded = true;
+            player->position.y -= collision.height * sign.y;
+            player->velocity = {0,0};
           }
           else{
-            player->position.y -= collision.height * sign.y;
+            player->is_grounded = false;
           }
+
       }
+
     }
 }
