@@ -47,7 +47,7 @@ class Player : public RigidBody2D{
     bool can_jump;
 
     Player(){
-      velocity = {0,1};
+      velocity = {0,0};
       position = {600, 0};
       size = {32, 32};
       speed = SPEED;
@@ -86,15 +86,16 @@ class Player : public RigidBody2D{
       }
       if (IsKeyPressed(KEY_UP) and can_jump == true){
         velocity.y = -1;
+        is_grounded = false;
       }
-      velocity.y += 1 * delta;
-      // velocity.y = 1;
       // else if (IsKeyDown(KEY_DOWN)){
       //   velocity.y = 1;
       // }
       // else{
       //   velocity.y = 0;
       // }
+      velocity.y += 1 * delta;
+
       if (is_grounded){
         can_jump = true;
       }
@@ -173,13 +174,12 @@ void Resolve_World_Collision(std::shared_ptr<Player>player, std::vector<Rectangl
         sign.y = player->collider.y + player->collider.height < boxes[i].y + boxes[i].height ? 1 : -1;
           if (collision.width < collision.height){
             player->position.x -= collision.width * sign.x;
-            player->velocity = {0,0};
           }
-          if (collision.height < collision.width){
+          else if (collision.height < collision.width){
             std::cout << "collision" << std::endl;
             player->is_grounded = true;
             player->position.y -= collision.height * sign.y;
-            player->velocity = {0,0};
+            player->velocity.y = 0;
           }
           else{
             player->is_grounded = false;
