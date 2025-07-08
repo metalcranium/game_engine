@@ -14,6 +14,7 @@
 class RigidBody2D;
 class Player;
 // mass, position, velocity, acceleration
+// acceleratino = velocity * delta * mass
 // force = mass * acceleration
 // kinetic energy = .5 * mass * speed^2
 class RigidBody2D{
@@ -34,6 +35,7 @@ class RigidBody2D{
       std::cout << "rigid body destroyed" << std::endl;
     }
     virtual void update(){
+      velocity.x -= velocity.x * delta * mass;
     }
     virtual void draw(){
       DrawRectangle(position.x, position.y, size.x, size.y, color);
@@ -153,21 +155,38 @@ class World{
   public:
     std::vector<std::shared_ptr<RigidBody2D>>objects;
 };
-class PhysicsWorld{
-  public:
-    std::vector<std::shared_ptr<RigidBody2D>>objects;
-
+class AnimationPlayer{
+  int frame_speed;
+  int frame_counter;
+  int current_frame;
 };
 
-
-void Resolve_World_Collision(std::shared_ptr<PhysicsWorld>world);
-void Resolve_World_Collision(std::shared_ptr<Player>player, std::shared_ptr<PhysicsWorld>world);
+class Editor{
+  
+};
+void Resolve_World_Collision(std::shared_ptr<World>world);
+void Resolve_World_Collision(std::shared_ptr<Player>player, std::shared_ptr<World>world);
 
 int main(){
   InitWindow(scr_width, scr_height, "Collisions");
   SetTargetFPS(fps);
 
-  std::shared_ptr<PhysicsWorld>world = std::make_shared<PhysicsWorld>();
+// TODO: Viewport zoom  
+// TODO: mouse ?
+
+  Camera2D camera;
+  camera.offset = {float(scr_width)/2, float(scr_height)/2};
+  camera.target = {float(scr_width)/2 - 500, float(scr_height)/2 - 300};
+  camera.rotation = 0;
+  camera.zoom = 2;
+
+  float speed = 50;
+  Vector2 velocity = {0,0};
+
+  RenderTexture viewport = LoadRenderTexture(scr_width - 400, scr_height);
+  Rectangle screen_rect = {0,0,float(viewport.texture.width),float(viewport.texture.width)};
+  
+  std::shared_ptr<World>world = std::make_shared<World>();
   std::shared_ptr<Player>player = std::make_shared<Player>();
   Rectangle collision;
   std::shared_ptr<Block>ground = std::make_shared<Block>();
@@ -180,7 +199,10 @@ int main(){
   // world->objects.push_back(player);
   
   while (!WindowShouldClose()){
-    std::cout << world->objects.size() << std::endl;
+    Vector2 mouse = GetScreenToWorld2D(GetMousePosition(), camera);
+    camera.target += velocity * speed * delta;
+
+    // std::cout << world->objects.size() << std::endl;
     // update
     // world->Resolve_World_Collision();
     Resolve_World_Collision(world);
@@ -188,6 +210,24 @@ int main(){
     player->update();
     for (auto i : world->objects){
       i->update();
+    }
+    if (IsKeyDown(KEY_LEFT)){
+      velocity.x = -1;
+    }
+    else if (IsKeyDown(KEY_RIGHT)){
+      velocity.x = 1;
+    }
+    else{
+      velocity.x = 0;
+    }
+    if (IsKeyDown(KEY_UP)){
+      velocity.y = -1;
+    }
+    else if (IsKeyDown(KEY_DOWN)){
+      velocity.y = 1;
+    }
+    else{
+      velocity.y = 0;
     }
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
       std::shared_ptr<Block>obj = std::make_shared<Block>();
@@ -219,7 +259,21 @@ int main(){
     if (IsKeyPressed(KEY_F5)){
       system("g++ test.cpp -o test -lraylib && ./test");
     }
+// viewport and UI
+    BeginTextureMode(viewport);
+    ClearBackground(GRAY);
+    BeginMode2D(camera);
 
+    for(float i = 0; i <= 100; i++){
+      DrawLineV({0, i * 32}, {100 * 32,i * 32}, DARKGRAY);
+    }
+    for(float i = 0; i <= 100; i++){
+      DrawLineV({i * 32, 0}, {i * 32, 100 * 32}, DARKGRAY);
+    }
+
+    EndMode2D();
+    EndTextureMode();
+    
     // draw
     BeginDrawing();
     ClearBackground(BLACK);
@@ -227,49 +281,54 @@ int main(){
     for (auto i : world->objects){
       i->draw();
     }
+
     DrawRectangleRec(collision, GREEN);
 
+    DrawTextureRec(viewport.texture, screen_rect, {0,0}, WHITE);
     EndDrawing();
     
   }
   CloseWindow();
   
 }
-void Resolve_World_Collision(std::shared_ptr<Player>player, std::shared_ptr<PhysicsWorld>world){
+// Use this one for player due to the is_grounded flag
+void Resolve_World_Collision(std::shared_ptr<Player>player, std::shared_ptr<World>world){
   Vector2 sign = {0,0};
   bool collided;
   Rectangle collision;
-  for (int i = 0; i < world->objects.size(); i++){
-    collided = CheckCollisionRecs(player->collider, world->objects[i]->collider);
-    collision = GetCollisionRec(player->collider, world->objects[i]->collider);
+  for (auto i : world->objects){
+    collided = CheckCollisionRecs(player->collider, i->collider);
+    collision = GetCollisionRec(player->collider, i->collider);
     if (collided){
-      sign.x = player->collider.x + player->collider.width < world->objects[i]->collider.x + world->objects[i]->collider.width ? 1 : -1;
-      sign.y = player->collider.y + player->collider.height < world->objects[i]->collider.y + world->objects[i]->collider.height ? 1 : -1;
+      sign.x = player->collider.x + player->collider.width < i->collider.x + i->collider.width ? 1 : -1;
+      sign.y = player->collider.y + player->collider.height < i->collider.y + i->collider.height ? 1 : -1;
         if (collision.width < collision.height){
           player->position.x -= collision.width * sign.x;
           player->velocity.x *= -1;
           player->is_blocked = true;
-          if (!world->objects[i]->is_static){
-            world->objects[i]->position.x += collision.width * sign.x;
+          if (!i->is_static){
+            i->position.x += collision.width * sign.x;// * (player->speed * delta);
+            // i->position.x += (sign.x * delta)* player->speed * player->mass;
           }
-          break;
+          // break;
         }
         else if (collision.height < collision.width){
           player->is_grounded = true;
           player->position.y -= collision.height * sign.y;
           player->velocity.y = 0;
 
-          if (!world->objects[i]->is_static){
-            world->objects[i]->position.y += collision.height * sign.y;
+          if (!i->is_static){
+            i->position.y += collision.height * sign.y;
           }
         }
         else{
           player->is_grounded = false;
+          // break;
         }
     }
   }
 }
-void Resolve_World_Collision(std::shared_ptr<PhysicsWorld>world){
+void Resolve_World_Collision(std::shared_ptr<World>world){
   Vector2 sign = {0,0};
   bool collided;
   Rectangle collision;
