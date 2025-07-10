@@ -3,7 +3,6 @@
 #include <memory>
 #include <vector>
 #include <iostream>
-#include <fstream>
 
 #define scr_width 1200
 #define scr_height 800
