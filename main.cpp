@@ -1,11 +1,10 @@
+#include <cmath>
 #include <raylib.h>
 #include <raymath.h>
 #include <memory>
 #include <vector>
 #include <iostream>
 
-#define scr_width 1200
-#define scr_height 800
 #define delta GetFrameTime()
 #define gravity 50
 #define fps 60
@@ -71,7 +70,7 @@ class Player : public RigidBody2D{
     float speed;
     float fall;
     bool is_blocked;
-    bool is_grounded;
+    // bool is_grounded;
     bool can_jump;
 
     Player(){
@@ -97,6 +96,7 @@ class Player : public RigidBody2D{
       position.x += velocity.x * speed * delta;
       position.y += velocity.y * speed * delta;
       velocity.y += 5 * delta;
+      // std::cout << "is grounded: " << is_grounded << std::endl;
 
       collider = {position.x, position.y, size.x, size.y};
       input();
@@ -117,7 +117,7 @@ class Player : public RigidBody2D{
       else{
         velocity.x -= (velocity.x * delta)*mass;
       }
-      if (IsKeyPressed(KEY_UP) and can_jump == true){
+      if (IsKeyPressed(KEY_UP) and can_jump){
         jump();
       }
       // if (IsKeyDown(KEY_UP)){
@@ -152,6 +152,8 @@ class Player : public RigidBody2D{
 };
 class World{
   public:
+    int grid_count;
+    float grid_size;
     std::vector<std::shared_ptr<RigidBody2D>>objects;
 };
 class AnimationPlayer{
@@ -165,8 +167,11 @@ class Editor{
 };
 void Resolve_World_Collision(std::shared_ptr<World>world);
 void Resolve_World_Collision(std::shared_ptr<Player>player, std::shared_ptr<World>world);
-
+void Draw_Grid(std::shared_ptr<World>world);
 int main(){
+
+  int scr_width = 1200;
+  int scr_height = 800;
   InitWindow(scr_width, scr_height, "Collisions");
   SetTargetFPS(fps);
 
@@ -174,63 +179,75 @@ int main(){
 // TODO: mouse ?
 
   Camera2D camera;
-  camera.offset = {float(scr_width)/2, float(scr_height)/2};
-  camera.target = {float(scr_width)/2 - 500, float(scr_height)/2 - 300};
+  camera.offset = {(float(scr_width)/2), (float(scr_height)/2)};
+  camera.target = {(float(scr_width)/2), (float(scr_height)/2)};
   camera.rotation = 0;
-  camera.zoom = 2;
+  camera.zoom = 1.25;
 
-  float speed = 50;
+  float speed = 300;
   Vector2 velocity = {0,0};
 
-  RenderTexture viewport = LoadRenderTexture(scr_width - 400, scr_height);
-  Rectangle screen_rect = {0,0,float(viewport.texture.width),float(viewport.texture.width)};
+  RenderTexture viewport = LoadRenderTexture(scr_width, scr_height);
+  Rectangle screen_rect = {0,0,float(viewport.texture.width),-float(viewport.texture.height)};
   
   std::shared_ptr<World>world = std::make_shared<World>();
+  world->grid_count = 10;
+  world->grid_size = 32;
   std::shared_ptr<Player>player = std::make_shared<Player>();
   Rectangle collision;
   std::shared_ptr<Block>ground = std::make_shared<Block>();
   ground->vel = 0;
   ground->color = RED;
-  ground->position = {0, scr_height-50};
-  ground->size = {scr_width, 50};
+  ground->position = {0, float(scr_height)-50};
+  ground->size = {float(scr_width), 50};
   ground->is_static = true;
   world->objects.push_back(ground);
   // world->objects.push_back(player);
   
   while (!WindowShouldClose()){
     Vector2 mouse = GetScreenToWorld2D(GetMousePosition(), camera);
-    camera.target += velocity * speed * delta;
+    // camera.target += velocity * speed * delta;
+    std::cout << int(mouse.x) / 32 << "," << int(mouse.y)/32 << std::endl;
+    std::cout << mouse.x << "," << mouse.y << std::endl;
+    std::cout << GetMousePosition().x << "," << GetMousePosition().y << std::endl;
 
     // std::cout << world->objects.size() << std::endl;
     // update
     // world->Resolve_World_Collision();
-    Resolve_World_Collision(world);
-    Resolve_World_Collision(player, world);
-    player->update();
-    for (auto i : world->objects){
-      i->update();
-    }
+    // Resolve_World_Collision(world);
+    // Resolve_World_Collision(player, world);
+    // player->update();
+    // for (auto i : world->objects){
+    //   i->update();
+    // }
     if (IsKeyDown(KEY_LEFT)){
-      velocity.x = -1;
+      // velocity.x = -1;
+      camera.target.x -= speed * delta;
     }
     else if (IsKeyDown(KEY_RIGHT)){
-      velocity.x = 1;
+      // velocity.x = 1;
+      camera.target.x += speed * delta;
     }
-    else{
-      velocity.x = 0;
-    }
+    // else{
+    //   velocity.x = 0;
+    // }
     if (IsKeyDown(KEY_UP)){
-      velocity.y = -1;
+      // velocity.y = -1;
+      camera.target.y -= speed * delta;
     }
     else if (IsKeyDown(KEY_DOWN)){
-      velocity.y = 1;
+      // velocity.y = 1;
+      camera.target.y += speed * delta;
     }
-    else{
-      velocity.y = 0;
-    }
+    // else{
+    //   velocity.y = 0;
+    // }
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
       std::shared_ptr<Block>obj = std::make_shared<Block>();
-      obj->position = {GetMousePosition().x, GetMousePosition().y};
+      // obj->position = {GetMousePosition().x, GetMousePosition().y};
+      int position_x = int(mouse.x / 32);
+      int position_y = int(mouse.y / 32);
+      obj->position = {float(position_x*32), float(position_y*32) };
       obj->size = {32, 32};
       obj->vel = 0;
       obj->color = RED;
@@ -263,12 +280,12 @@ int main(){
     ClearBackground(GRAY);
     BeginMode2D(camera);
 
-    for(float i = 0; i <= 100; i++){
-      DrawLineV({0, i * 32}, {100 * 32,i * 32}, DARKGRAY);
+
+    for (auto i : world->objects){
+      i->draw();
     }
-    for(float i = 0; i <= 100; i++){
-      DrawLineV({i * 32, 0}, {i * 32, 100 * 32}, DARKGRAY);
-    }
+    Draw_Grid(world);
+
 
     EndMode2D();
     EndTextureMode();
@@ -276,10 +293,10 @@ int main(){
     // draw
     BeginDrawing();
     ClearBackground(BLACK);
-    player->draw();
-    for (auto i : world->objects){
-      i->draw();
-    }
+    // player->draw();
+    // for (auto i : world->objects){
+    //   i->draw();
+    // }
 
     DrawRectangleRec(collision, GREEN);
 
@@ -317,6 +334,7 @@ void Resolve_World_Collision(std::shared_ptr<Player>player, std::shared_ptr<Worl
           player->velocity.y = 0;
 
           if (!i->is_static){
+          
             i->position.y += collision.height * sign.y;
           }
         }
@@ -350,6 +368,7 @@ void Resolve_World_Collision(std::shared_ptr<World>world){
           }
         }
         else if (collision.height < collision.width){
+          // i->is_grounded = true;
           if (!i->is_static){
             i->position.y -= collision.height * sign.y;
             i->velocity.y = 0;
@@ -358,8 +377,22 @@ void Resolve_World_Collision(std::shared_ptr<World>world){
             j->position.y += collision.height * sign.y;
             j->velocity.y = 0;
           }
+          // break;
         }
+        // else{
+        //   i->is_grounded = false;
+        // }
       }
+
     }
   }
+}
+void Draw_Grid(std::shared_ptr<World>world){
+  
+    for(float i = 0; i <= world->grid_count; i++){
+      DrawLineV({0 * world->grid_size, i * world->grid_size}, {float(world->grid_count) * world->grid_size,i * world->grid_size}, DARKGRAY);
+    }
+    for(float i = 0; i <= world->grid_count; i++){
+      DrawLineV({i * world->grid_size, 0* world->grid_size}, {i * world->grid_size, float(world->grid_count) * world->grid_size}, DARKGRAY);
+    }
 }
