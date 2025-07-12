@@ -235,46 +235,26 @@ int main(){
   world.grid_count = 100;
   world.grid_size = 32;
   world.Load_World();
-  // std::shared_ptr<Player>player = std::make_shared<Player>();
-  // std::shared_ptr<Block>ground = std::make_shared<Block>();
-  // ground->vel = 0;
-  // ground->color = RED;
-  // ground->position = {0, float(scr_height)-50};
-  // ground->size = {float(scr_width), 50};
-  // ground->is_static = true;
-  // world->objects.push_back(ground);
-  // world->objects.push_back(player);
   
   while (!WindowShouldClose()){
     //update
     Vector2 mouse = GetScreenToWorld2D(GetMousePosition(), camera);
     // Vector2 mouse = GetMousePosition();
-    // camera.target += velocity * speed * delta;
     std::cout << int(mouse.x) / 32 << "," << int(mouse.y)/32 << std::endl;
     std::cout << mouse.x << "," << mouse.y << std::endl;
     std::cout << GetMousePosition().x << "," << GetMousePosition().y << std::endl;
     if (IsKeyDown(KEY_LEFT)){
-      // velocity.x = -1;
       camera.target.x -= speed * delta;
     }
     else if (IsKeyDown(KEY_RIGHT)){
-      // velocity.x = 1;
       camera.target.x += speed * delta;
     }
-    // else{
-    //   velocity.x = 0;
-    // }
     if (IsKeyDown(KEY_UP)){
-      // velocity.y = -1;
       camera.target.y -= speed * delta;
     }
     else if (IsKeyDown(KEY_DOWN)){
-      // velocity.y = 1;
       camera.target.y += speed * delta;
     }
-    // else{
-    //   velocity.y = 0;
-    // }
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
       std::shared_ptr<Block>obj = std::make_shared<Block>();
       // obj->position = {GetMousePosition().x, GetMousePosition().y};
@@ -293,16 +273,10 @@ int main(){
       int position_y = int(mouse.y / 32);
       obj->position = {float(position_x*32), float(position_y*32) };
       obj->size = {32, 32};
-      obj->vel = 0;
+      obj->vel = 5;
       obj->color = YELLOW;
       obj->is_static = false;
       world.objects.push_back(obj);
-      // block->position = {GetMousePosition().x, GetMousePosition().y};
-      // block->size = {32,32};
-      // block->vel = 5;
-      // block->color = YELLOW;
-      // block->is_static = false;
-      // world.objects.push_back(block);
     }
     if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)){
       for (int i = 0; i < world.objects.size(); i++){
@@ -367,8 +341,7 @@ void Resolve_World_Collision(std::shared_ptr<Player>player, std::shared_ptr<Worl
           player->velocity.x *= -1;
           player->is_blocked = true;
           if (!i->is_static){
-            i->position.x += collision.width * sign.x;// * (player->speed * delta);
-            // i->position.x += (sign.x * delta)* player->speed * player->mass;
+            i->position.x += collision.width * sign.x;
           }
           // break;
         }
@@ -383,7 +356,6 @@ void Resolve_World_Collision(std::shared_ptr<Player>player, std::shared_ptr<Worl
         }
         else{
           player->is_grounded = false;
-          // break;
         }
     }
   }
@@ -474,9 +446,7 @@ void Game(){
     std::cout << mouse.x << "," << mouse.y << std::endl;
     // std::cout << GetMousePosition().x << "," << GetMousePosition().y << std::endl;
 
-    // std::cout << world->objects.size() << std::endl;
     // update
-    // world->Resolve_World_Collision();
     Resolve_World_Collision(world);
     // Resolve_World_Collision(player, world);
     // player->update();
