@@ -183,7 +183,7 @@ class World{
       float width;
       float height;
       bool solid;
-      while (file >> x >> y >> width >> height){
+      while (file >> x >> y >> width >> height >> solid){
         std::shared_ptr<RigidBody2D>obj = std::make_shared<RigidBody2D>();
         obj->position.x = x;
         obj->position.y = y;
@@ -192,6 +192,9 @@ class World{
         obj->is_static = solid;
         obj->color = RED;
         objects.push_back(obj);
+        std::cout << x << " "
+        << y << " " << width << " "
+        << height << " "<< solid << std::endl;
       }
       file.close();
     }
@@ -212,7 +215,7 @@ void Game();
 int main(){
 
   int scr_width = 1200;
-  int scr_height = 800;
+  int scr_height = 600;
   InitWindow(scr_width, scr_height, "Collisions");
   SetTargetFPS(fps);
 
@@ -232,7 +235,7 @@ int main(){
   Rectangle screen_rect = {0,0,float(viewport.texture.width),-float(viewport.texture.height)};
   
   World world;
-  world.grid_count = 100;
+  world.grid_count = 25;
   world.grid_size = 32;
   world.Load_World();
   
@@ -240,9 +243,9 @@ int main(){
     //update
     Vector2 mouse = GetScreenToWorld2D(GetMousePosition(), camera);
     // Vector2 mouse = GetMousePosition();
-    std::cout << int(mouse.x) / 32 << "," << int(mouse.y)/32 << std::endl;
-    std::cout << mouse.x << "," << mouse.y << std::endl;
-    std::cout << GetMousePosition().x << "," << GetMousePosition().y << std::endl;
+    // std::cout << int(mouse.x) / 32 << "," << int(mouse.y)/32 << std::endl;
+    // std::cout << mouse.x << "," << mouse.y << std::endl;
+    // std::cout << GetMousePosition().x << "," << GetMousePosition().y << std::endl;
     if (IsKeyDown(KEY_LEFT)){
       camera.target.x -= speed * delta;
     }
@@ -424,7 +427,7 @@ void Game(){
 
   
   World world;
-  world.grid_count = 100;
+  world.grid_count = 25;
   world.grid_size = 32;
   world.objects.clear();
   world.Load_World();
@@ -443,7 +446,7 @@ void Game(){
     std::cout << "word size: " << world.objects.size() << std::endl;
     Vector2 mouse = GetMousePosition();
     // std::cout << int(mouse.x) / 32 << "," << int(mouse.y)/32 << std::endl;
-    std::cout << mouse.x << "," << mouse.y << std::endl;
+    // std::cout << mouse.x << "," << mouse.y << std::endl;
     // std::cout << GetMousePosition().x << "," << GetMousePosition().y << std::endl;
 
     // update
