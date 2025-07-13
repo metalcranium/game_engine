@@ -42,7 +42,6 @@ class RigidBody2D{
 class Block : public RigidBody2D{
   public:
     float fall;
-    float vel;
 
     Block(){
       velocity = {0,0};
@@ -184,7 +183,7 @@ class World{
       float height;
       bool solid;
       while (file >> x >> y >> width >> height >> solid){
-        std::shared_ptr<RigidBody2D>obj = std::make_shared<RigidBody2D>();
+        std::shared_ptr<Block>obj = std::make_shared<Block>();
         obj->position.x = x;
         obj->position.y = y;
         obj->size.x = width;
@@ -192,11 +191,18 @@ class World{
         obj->is_static = solid;
         obj->color = RED;
         objects.push_back(obj);
-        std::cout << x << " "
-        << y << " " << width << " "
-        << height << " "<< solid << std::endl;
       }
       file.close();
+    }
+    void Print_World(){
+      for (auto obj : objects){
+        std::cout <<
+        obj->position.x << " " <<
+        obj->position.y << " " <<
+        obj->size.x << " " <<
+        obj->size.y << " " <<
+        obj->is_static << std::endl;
+      }
     }
 };
 class AnimationPlayer{
@@ -204,7 +210,6 @@ class AnimationPlayer{
   int frame_counter;
   int current_frame;
 };
-
 class Editor{
   
 };
@@ -213,7 +218,7 @@ void Resolve_World_Collision(std::shared_ptr<Player>player, std::shared_ptr<Worl
 void Draw_Grid(World world);
 void Game();
 int main(){
-
+  Game();
   int scr_width = 1200;
   int scr_height = 600;
   InitWindow(scr_width, scr_height, "Collisions");
@@ -310,6 +315,7 @@ int main(){
     // draw
     BeginDrawing();
     ClearBackground(BLACK);
+<<<<<<< HEAD
     // player->draw();
     // for (auto i : world->objects){
     //   i->draw();
@@ -319,6 +325,14 @@ int main(){
   }
   CloseWindow();
 }
+=======
+
+    DrawTextureRec(viewport.texture, screen_rect, {0,0}, WHITE);
+    EndDrawing();
+      }
+  CloseWindow();
+  }
+>>>>>>> 3954da6bec2e89a5f2a049cad75bbb5428fcb3bf
 // Use this one for player due to the is_grounded flag
 void Resolve_World_Collision(std::shared_ptr<Player>player, std::shared_ptr<World>world){
   Vector2 sign = {0,0};
@@ -407,33 +421,35 @@ void Draw_Grid(World world){
 }
 void Game(){
   int scr_width = 1200;
-  int scr_height = 800;
+  int scr_height = 600;
   InitWindow(scr_width, scr_height, "Collisions");
   SetTargetFPS(fps);
+<<<<<<< HEAD
 
+=======
+  
+>>>>>>> 3954da6bec2e89a5f2a049cad75bbb5428fcb3bf
   World world;
   world.grid_count = 25;
   world.grid_size = 32;
-  world.objects.clear();
   world.Load_World();
   std::shared_ptr<Player>player = std::make_shared<Player>();
   Rectangle collision;
   std::shared_ptr<Block>ground = std::make_shared<Block>();
-  ground->vel = 0;
   ground->color = RED;
   ground->position = {0, float(scr_height)-50};
   ground->size = {float(scr_width), 50};
   ground->is_static = true;
   world.objects.push_back(ground);
   world.objects.push_back(player);
+  world.Print_World();
   
   while (!WindowShouldClose()){
-    std::cout << "word size: " << world.objects.size() << std::endl;
+    // std::cout << "word size: " << world.objects.size() << std::endl;
     Vector2 mouse = GetMousePosition();
     // std::cout << int(mouse.x) / 32 << "," << int(mouse.y)/32 << std::endl;
     // std::cout << mouse.x << "," << mouse.y << std::endl;
     // std::cout << GetMousePosition().x << "," << GetMousePosition().y << std::endl;
-
     // update
     Resolve_World_Collision(world);
     // Resolve_World_Collision(player, world);
@@ -476,5 +492,6 @@ void Game(){
     }
     EndDrawing();
   }
+  world.Print_World();
   CloseWindow();
 }
