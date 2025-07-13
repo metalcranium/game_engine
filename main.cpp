@@ -25,25 +25,9 @@ class RigidBody2D{
     Color color;
     bool is_static;
     bool is_grounded;
-
-    RigidBody2D(){
-      std::cout << "rigid body created" << std::endl;
-    }
-    ~RigidBody2D(){
-      std::cout << "rigid body destroyed" << std::endl;
-    }
-    virtual void update(){
-      velocity.x -= velocity.x * delta * mass;
-    }
-    virtual void draw(){
-      DrawRectangle(position.x, position.y, size.x, size.y, color);
-    }
-};
-class Block : public RigidBody2D{
-  public:
     float fall;
 
-    Block(){
+    RigidBody2D(){
       velocity = {0,0};
       size = {32,32};
       fall = gravity;
@@ -96,7 +80,7 @@ class Player : public RigidBody2D{
       Vector2Normalize(velocity);
       position.x += velocity.x * speed * delta;
       position.y += velocity.y * speed * delta;
-      std::cout << "is grounded: " << is_grounded << std::endl;
+      // std::cout << "is grounded: " << is_grounded << std::endl;
 
       collider = {position.x, position.y, size.x, size.y};
       input();
@@ -183,7 +167,7 @@ class World{
       float height;
       bool solid;
       while (file >> x >> y >> width >> height >> solid){
-        std::shared_ptr<Block>obj = std::make_shared<Block>();
+        std::shared_ptr<RigidBody2D>obj = std::make_shared<RigidBody2D>();
         obj->position.x = x;
         obj->position.y = y;
         obj->size.x = width;
@@ -202,6 +186,51 @@ class World{
         obj->size.x << " " <<
         obj->size.y << " " <<
         obj->is_static << std::endl;
+      }
+    }
+
+    void Resolve_World_Collision(){
+      Vector2 sign = {0,0};
+      bool collided;
+      Rectangle collision;
+      for (auto i : objects){
+        for (auto j : objects){
+          if (i == j){
+            break;
+          }
+          collided = CheckCollisionRecs(i->collider, j->collider);
+          collision = GetCollisionRec(i->collider, j->collider);
+          if (collided){
+            i->is_grounded = true;
+            sign.x = i->collider.x + i->collider.width < j->collider.x + j->collider.width ? 1 : -1;
+            sign.y = i->collider.y + i->collider.height < j->collider.y + j->collider.height ? 1 : -1;
+            if (collision.width < collision.height){
+              if (!i->is_static){
+                i->position.x -= collision.width * sign.x;
+                i->velocity.x = 0;
+              }
+              if (!j->is_static){
+                j->position.x += collision.width * sign.x;
+                j->velocity.x = 0;
+              }
+            }
+            if (collision.height < collision.width){
+              i->is_grounded = true;
+              j->is_grounded = true;
+              if (!i->is_static){
+                i->position.y -= collision.height * sign.y;
+                i->velocity.y = 0;
+              }
+              if (!j->is_static){
+                j->position.y += collision.height * sign.y;
+                j->velocity.y = 0;
+              }
+            }
+          }
+          else{
+            i->is_grounded = false;
+          }
+        }
       }
     }
 };
@@ -264,7 +293,7 @@ int main(){
       camera.target.y += speed * delta;
     }
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
-      std::shared_ptr<Block>obj = std::make_shared<Block>();
+      std::shared_ptr<RigidBody2D>obj = std::make_shared<RigidBody2D>();
       // obj->position = {GetMousePosition().x, GetMousePosition().y};
       int position_x = int(mouse.x / 32);
       int position_y = int(mouse.y / 32);
@@ -275,7 +304,7 @@ int main(){
       world.objects.push_back(obj);
     }
     if (IsMouseButtonPressed(MOUSE_BUTTON_MIDDLE)){
-      std::shared_ptr<Block>obj = std::make_shared<Block>();
+      std::shared_ptr<RigidBody2D>obj = std::make_shared<RigidBody2D>();
       int position_x = int(mouse.x / 32);
       int position_y = int(mouse.y / 32);
       obj->position = {float(position_x*32), float(position_y*32) };
@@ -315,7 +344,6 @@ int main(){
     // draw
     BeginDrawing();
     ClearBackground(BLACK);
-<<<<<<< HEAD
     // player->draw();
     // for (auto i : world->objects){
     //   i->draw();
@@ -325,14 +353,6 @@ int main(){
   }
   CloseWindow();
 }
-=======
-
-    DrawTextureRec(viewport.texture, screen_rect, {0,0}, WHITE);
-    EndDrawing();
-      }
-  CloseWindow();
-  }
->>>>>>> 3954da6bec2e89a5f2a049cad75bbb5428fcb3bf
 // Use this one for player due to the is_grounded flag
 void Resolve_World_Collision(std::shared_ptr<Player>player, std::shared_ptr<World>world){
   Vector2 sign = {0,0};
@@ -380,6 +400,7 @@ void Resolve_World_Collision(World world){
       collided = CheckCollisionRecs(i->collider, j->collider);
       collision = GetCollisionRec(i->collider, j->collider);
       if (collided){
+        i->is_grounded = true;
         sign.x = i->collider.x + i->collider.width < j->collider.x + j->collider.width ? 1 : -1;
         sign.y = i->collider.y + i->collider.height < j->collider.y + j->collider.height ? 1 : -1;
         if (collision.width < collision.height){
@@ -424,26 +445,23 @@ void Game(){
   int scr_height = 600;
   InitWindow(scr_width, scr_height, "Collisions");
   SetTargetFPS(fps);
-<<<<<<< HEAD
 
-=======
-  
->>>>>>> 3954da6bec2e89a5f2a049cad75bbb5428fcb3bf
   World world;
   world.grid_count = 25;
   world.grid_size = 32;
   world.Load_World();
   std::shared_ptr<Player>player = std::make_shared<Player>();
   Rectangle collision;
-  std::shared_ptr<Block>ground = std::make_shared<Block>();
+  std::shared_ptr<RigidBody2D>ground = std::make_shared<RigidBody2D>();
   ground->color = RED;
   ground->position = {0, float(scr_height)-50};
   ground->size = {float(scr_width), 50};
   ground->is_static = true;
   world.objects.push_back(ground);
   world.objects.push_back(player);
-  world.Print_World();
+  // world.Print_World();
   
+  std::cout << "objects: " << world.objects.size() << std::endl;
   while (!WindowShouldClose()){
     // std::cout << "word size: " << world.objects.size() << std::endl;
     Vector2 mouse = GetMousePosition();
@@ -451,14 +469,14 @@ void Game(){
     // std::cout << mouse.x << "," << mouse.y << std::endl;
     // std::cout << GetMousePosition().x << "," << GetMousePosition().y << std::endl;
     // update
-    Resolve_World_Collision(world);
+    world.Resolve_World_Collision();
     // Resolve_World_Collision(player, world);
     // player->update();
     for (auto i : world.objects){
       i->update();
     }
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
-      std::shared_ptr<Block>obj = std::make_shared<Block>();
+      std::shared_ptr<RigidBody2D>obj = std::make_shared<RigidBody2D>();
       // obj->position = {GetMousePosition().x, GetMousePosition().y};
       int position_x = int(mouse.x / 32);
       int position_y = int(mouse.y / 32);
@@ -469,7 +487,7 @@ void Game(){
       world.objects.push_back(obj);
     }
     if (IsMouseButtonPressed(MOUSE_BUTTON_MIDDLE)){
-      std::shared_ptr<Block>block = std::make_shared<Block>();
+      std::shared_ptr<RigidBody2D>block = std::make_shared<RigidBody2D>();
       block->position = {GetMousePosition().x, GetMousePosition().y};
       block->size = {32,32};
       block->color = YELLOW;
