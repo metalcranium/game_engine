@@ -79,7 +79,7 @@ class Player : public RigidBody2D{
       Vector2Normalize(velocity);
       position.x += velocity.x * speed * delta;
       position.y += velocity.y * speed * delta;
-      // std::cout << "is grounded: " << is_grounded << std::endl;
+      std::cout << "is grounded: " << is_grounded << std::endl;
 
       collider = {position.x, position.y, size.x, size.y};
       input();
@@ -138,11 +138,19 @@ class Player : public RigidBody2D{
       mass = 5;
     }
 };
+class Tile{
+  Vector2 position;
+  Vector2 size;
+  Rectangle source;
+  Texture texture;
+};
 class World{
   public:
     int grid_count;
     float grid_size;
     std::vector<std::shared_ptr<RigidBody2D>>objects;
+    std::vector<Tile>background;
+    std::vector<Tile>foreground;
 
 
     void Save_World(){
@@ -213,17 +221,17 @@ class World{
             }
             if (collision.height < collision.width){
               if (!i->is_static){
-                if (sign.y == -1){
-                  i->is_grounded = true;
-                }
-                else{
-                  i->is_grounded = false;
-                }
+                // if (sign.y <= 0){
+                //   i->is_grounded = true;
+                // }
+                // else{
+                //   i->is_grounded = false;
+                // }
                 i->position.y -= collision.height * sign.y;
                 i->velocity.y = 0;
               }
               if (!j->is_static){
-                j->is_grounded = true;
+                // j->is_grounded = true;
                 j->position.y += collision.height * sign.y;
                 j->velocity.y = 0;
               }
