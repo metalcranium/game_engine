@@ -265,7 +265,6 @@ int main(){
       int position_y = int(mouse.y / 32);
       obj->position = {float(position_x*32), float(position_y*32) };
       obj->size = {32, 32};
-      obj->vel = 0;
       obj->color = RED;
       obj->is_static = true;
       world.objects.push_back(obj);
@@ -276,7 +275,6 @@ int main(){
       int position_y = int(mouse.y / 32);
       obj->position = {float(position_x*32), float(position_y*32) };
       obj->size = {32, 32};
-      obj->vel = 5;
       obj->color = YELLOW;
       obj->is_static = false;
       world.objects.push_back(obj);
@@ -288,7 +286,6 @@ int main(){
         }
       }
     }
-
     // runs the game from inside the editor in separate window
     if (IsKeyPressed(KEY_F5)){
       // system("g++ test.cpp -o test -lraylib && ./test");
@@ -302,12 +299,10 @@ int main(){
     ClearBackground(GRAY);
     BeginMode2D(camera);
 
-
     for (auto i : world.objects){
       i->draw();
     }
     Draw_Grid(world);
-
 
     EndMode2D();
     EndTextureMode();
@@ -319,14 +314,10 @@ int main(){
     // for (auto i : world->objects){
     //   i->draw();
     // }
-
-
     DrawTextureRec(viewport.texture, screen_rect, {0,0}, WHITE);
     EndDrawing();
-    
   }
   CloseWindow();
-  
 }
 // Use this one for player due to the is_grounded flag
 void Resolve_World_Collision(std::shared_ptr<Player>player, std::shared_ptr<World>world){
@@ -403,12 +394,10 @@ void Resolve_World_Collision(World world){
       else{
         i->is_grounded = false;
       }
-
     }
   }
 }
 void Draw_Grid(World world){
-  
     for(float i = 0; i <= world.grid_count; i++){
       DrawLineV({0 * world.grid_size, i * world.grid_size}, {float(world.grid_count) * world.grid_size,i * world.grid_size}, DARKGRAY);
     }
@@ -422,10 +411,6 @@ void Game(){
   InitWindow(scr_width, scr_height, "Collisions");
   SetTargetFPS(fps);
 
-// TODO: Viewport zoom  
-// TODO: mouse ?
-
-  
   World world;
   world.grid_count = 25;
   world.grid_size = 32;
@@ -463,7 +448,6 @@ void Game(){
       int position_y = int(mouse.y / 32);
       obj->position = {float(position_x*32), float(position_y*32) };
       obj->size = {32, 32};
-      obj->vel = 0;
       obj->color = RED;
       obj->is_static = true;
       world.objects.push_back(obj);
@@ -472,7 +456,6 @@ void Game(){
       std::shared_ptr<Block>block = std::make_shared<Block>();
       block->position = {GetMousePosition().x, GetMousePosition().y};
       block->size = {32,32};
-      block->vel = 5;
       block->color = YELLOW;
       block->is_static = false;
       world.objects.push_back(block);
@@ -484,8 +467,6 @@ void Game(){
         }
       }
     }
-
-    
     // draw
     BeginDrawing();
     ClearBackground(BLACK);
@@ -494,8 +475,6 @@ void Game(){
       i->draw();
     }
     EndDrawing();
-    
   }
   CloseWindow();
-  
 }
