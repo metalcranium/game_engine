@@ -35,6 +35,7 @@ class RigidBody2D{
     virtual void update(){
       position.y += velocity.y * 200 * delta;
       collider = {position.x, position.y, size.x, size.y};
+
       if (is_static){
         velocity = {0,0};
       }
@@ -152,7 +153,6 @@ class World{
     std::vector<Tile>background;
     std::vector<Tile>foreground;
 
-
     void Save_World(){
       std::ofstream file;
       file.open("map.txt");
@@ -176,8 +176,10 @@ class World{
       bool solid;
       while (file >> x >> y >> width >> height >> solid){
         std::shared_ptr<RigidBody2D>obj = std::make_shared<RigidBody2D>();
-        obj->position = {x,y};
-        obj->size = {width, height};
+        obj->position.x = x;
+        obj->position.y = y;
+        obj->size.x = width;
+        obj->size.y = height;
         obj->is_static = solid;
         obj->color = RED;
         objects.push_back(obj);
@@ -221,17 +223,17 @@ class World{
             }
             if (collision.height < collision.width){
               if (!i->is_static){
-                // if (sign.y <= 0){
-                //   i->is_grounded = true;
-                // }
-                // else{
-                //   i->is_grounded = false;
-                // }
+                if (sign.y == 1){
+                  i->is_grounded = true;
+                }
+                else{
+                  i->is_grounded = false;
+                }
                 i->position.y -= collision.height * sign.y;
                 i->velocity.y = 0;
               }
               if (!j->is_static){
-                // j->is_grounded = true;
+                j->is_grounded = true;
                 j->position.y += collision.height * sign.y;
                 j->velocity.y = 0;
               }
@@ -367,11 +369,11 @@ int main(){
   CloseWindow();
 }
 // Use this one for player due to the is_grounded flag
-void Resolve_World_Collision(std::shared_ptr<Player>player, World world){
+void Resolve_World_Collision(std::shared_ptr<Player>player, std::shared_ptr<World>world){
   Vector2 sign = {0,0};
   bool collided;
   Rectangle collision;
-  for (auto i : world.objects){
+  for (auto i : world->objects){
     collided = CheckCollisionRecs(player->collider, i->collider);
     collision = GetCollisionRec(player->collider, i->collider);
     if (collided){
@@ -398,9 +400,6 @@ void Resolve_World_Collision(std::shared_ptr<Player>player, World world){
         else{
           player->is_grounded = false;
         }
-    }
-    else{
-      player->is_grounded = false;
     }
   }
 }
@@ -430,10 +429,9 @@ void Game(){
   ground->is_static = true;
   world.objects.push_back(ground);
   world.objects.push_back(player);
-
-  world.Load_World();
   // world.Print_World();
-  
+  world.Load_World();
+    
   std::cout << "objects: " << world.objects.size() << std::endl;
   while (!WindowShouldClose()){
     // std::cout << "word size: " << world.objects.size() << std::endl;
