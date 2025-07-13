@@ -9,8 +9,8 @@
 #define gravity 50
 #define fps 60
 
-class RigidBody2D;
-class Player;
+// class RigidBody2D;
+// class Player;
 // mass, position, velocity, acceleration
 // acceleratino = velocity * delta * mass
 // force = mass * acceleration
@@ -75,7 +75,6 @@ class Player : public RigidBody2D{
     ~Player(){
       std::cout << "player destroyed" << std::endl;
     }
-
     virtual void update(){
       Vector2Normalize(velocity);
       position.x += velocity.x * speed * delta;
@@ -139,7 +138,7 @@ class Player : public RigidBody2D{
       mass = 5;
     }
 };
-class Tile{
+struct Tile{
   Vector2 position;
   Vector2 size;
   Rectangle source;
@@ -196,12 +195,12 @@ class World{
         obj->is_static << std::endl;
       }
     }
-
     void Resolve_World_Collision(){
       Vector2 sign = {0,0};
       bool collided;
       Rectangle collision;
       for (auto i : objects){
+          std::cout << sign.y << std::endl;
         for (auto j : objects){
           if (i == j){
             break;
@@ -209,8 +208,10 @@ class World{
           collided = CheckCollisionRecs(i->collider, j->collider);
           collision = GetCollisionRec(i->collider, j->collider);
           if (collided){
-            sign.x = i->collider.x + i->collider.width < j->collider.x + j->collider.width ? 1 : -1;
-            sign.y = i->collider.y + i->collider.height < j->collider.y + j->collider.height ? 1 : -1;
+            // sign.x = i->collider.x + i->collider.width < j->collider.x + j->collider.width ? 1 : -1;
+            // sign.y = i->collider.y + i->collider.height < j->collider.y + j->collider.height ? 1 : -1;
+            sign.x = i->collider.x + i->collider.width /2 < j->collider.x + j->collider.width/2 ? 1 : -1;
+            sign.y = i->collider.y + i->collider.height /2 < j->collider.y + j->collider.height/2 ? 1 : -1;
             if (collision.width < collision.height){
               if (!i->is_static){
                 i->position.x -= collision.width * sign.x;
@@ -222,30 +223,18 @@ class World{
               }
             }
             if (collision.height < collision.width){
-              if (!i->is_static){
-                if (sign.y == 1){
-                  i->is_grounded = true;
+                if (sign.y == -1){
+                  j->is_grounded = true;
                 }
                 else{
-                  i->is_grounded = false;
+                  j->is_grounded = false;
                 }
-                i->position.y -= collision.height * sign.y;
-                i->velocity.y = 0;
-              }
-              if (!j->is_static){
-                j->is_grounded = true;
                 j->position.y += collision.height * sign.y;
                 j->velocity.y = 0;
-              }
             }
-            else{
-              j->is_grounded = false;
-            }
-          }
-          else{
-            i->is_grounded = false;
           }
         }
+        i->is_grounded = false;
       }
     }
 };
@@ -291,10 +280,6 @@ int main(){
   while (!WindowShouldClose()){
     //update
     Vector2 mouse = GetScreenToWorld2D(GetMousePosition(), camera);
-    // Vector2 mouse = GetMousePosition();
-    // std::cout << int(mouse.x) / 32 << "," << int(mouse.y)/32 << std::endl;
-    // std::cout << mouse.x << "," << mouse.y << std::endl;
-    // std::cout << GetMousePosition().x << "," << GetMousePosition().y << std::endl;
     if (IsKeyDown(KEY_LEFT)){
       camera.target.x -= speed * delta;
     }
@@ -368,41 +353,6 @@ int main(){
   }
   CloseWindow();
 }
-// Use this one for player due to the is_grounded flag
-void Resolve_World_Collision(std::shared_ptr<Player>player, std::shared_ptr<World>world){
-  Vector2 sign = {0,0};
-  bool collided;
-  Rectangle collision;
-  for (auto i : world->objects){
-    collided = CheckCollisionRecs(player->collider, i->collider);
-    collision = GetCollisionRec(player->collider, i->collider);
-    if (collided){
-      sign.x = player->collider.x + player->collider.width < i->collider.x + i->collider.width ? 1 : -1;
-      sign.y = player->collider.y + player->collider.height < i->collider.y + i->collider.height ? 1 : -1;
-        if (collision.width < collision.height){
-          player->position.x -= collision.width * sign.x;
-          player->velocity.x *= -1;
-          player->is_blocked = true;
-          if (!i->is_static){
-            i->position.x += collision.width * sign.x;
-          }
-          // break;
-        }
-        else if (collision.height < collision.width){
-          player->is_grounded = true;
-          player->position.y -= collision.height * sign.y;
-          player->velocity.y = 0;
-
-          if (!i->is_static){
-            i->position.y += collision.height * sign.y;
-          }
-        }
-        else{
-          player->is_grounded = false;
-        }
-    }
-  }
-}
 void Draw_Grid(World world){
     for(float i = 0; i <= world.grid_count; i++){
       DrawLineV({0 * world.grid_size, i * world.grid_size}, {float(world.grid_count) * world.grid_size,i * world.grid_size}, DARKGRAY);
@@ -422,33 +372,19 @@ void Game(){
   world.grid_size = 32;
   std::shared_ptr<Player>player = std::make_shared<Player>();
   Rectangle collision;
-  std::shared_ptr<RigidBody2D>ground = std::make_shared<RigidBody2D>();
-  ground->color = RED;
-  ground->position = {0, float(scr_height)-50};
-  ground->size = {float(scr_width), 50};
-  ground->is_static = true;
-  world.objects.push_back(ground);
   world.objects.push_back(player);
-  // world.Print_World();
   world.Load_World();
     
   std::cout << "objects: " << world.objects.size() << std::endl;
   while (!WindowShouldClose()){
-    // std::cout << "word size: " << world.objects.size() << std::endl;
     Vector2 mouse = GetMousePosition();
-    // std::cout << int(mouse.x) / 32 << "," << int(mouse.y)/32 << std::endl;
-    // std::cout << mouse.x << "," << mouse.y << std::endl;
-    // std::cout << GetMousePosition().x << "," << GetMousePosition().y << std::endl;
     // update
     world.Resolve_World_Collision();
-    // Resolve_World_Collision(player, world);
-    // player->update();
     for (auto i : world.objects){
       i->update();
     }
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
       std::shared_ptr<RigidBody2D>obj = std::make_shared<RigidBody2D>();
-      // obj->position = {GetMousePosition().x, GetMousePosition().y};
       int position_x = int(mouse.x / 32);
       int position_y = int(mouse.y / 32);
       obj->position = {float(position_x*32), float(position_y*32) };
@@ -475,7 +411,6 @@ void Game(){
     // draw
     BeginDrawing();
     ClearBackground(BLACK);
-    // player->draw();
     for (auto i : world.objects){
       i->draw();
     }
