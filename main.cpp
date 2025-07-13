@@ -236,7 +236,6 @@ class World{
         i->is_grounded = false;
       }
     }
-  
 };
 class AnimationPlayer{
   int frame_speed;
@@ -274,11 +273,11 @@ int main(){
   world.grid_count = (scr_width/32) + (scr_height / 32);
   world.grid_size = 32;
   world.Load_World();
-  
+  std::cout << "count: " << world.objects.size() << std::endl;
   while (!WindowShouldClose()){
     //update
     Vector2 mouse = GetScreenToWorld2D(GetMousePosition(), camera);
-    std::cout << mouse.x/32 << "," << mouse.y/32 << std::endl;
+    // std::cout << mouse.x/32 << "," << mouse.y/32 << std::endl;
     world.Update();
     if (IsKeyDown(KEY_LEFT)){
       camera.target.x -= speed * delta;
@@ -312,10 +311,13 @@ int main(){
       obj->is_static = false;
       world.objects.push_back(obj);
     }
+    
     if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)){
       for (int i = 0; i < world.objects.size(); i++){
         if (CheckCollisionPointRec(mouse, world.objects[i]->collider)){
-          world.objects.erase(world.objects.begin()+i-1);
+          // world.objects.erase(world.objects.begin());
+          std::cout << "index: " << i << std::endl;
+          // std::cout << "count: " << world.objects.size() << std::endl;
         }
       }
     }
@@ -371,7 +373,7 @@ void Game(){
   Rectangle collision;
   world.objects.push_back(player);
   world.Load_World();
-    
+  
   // std::cout << "objects: " << world.objects.size() << std::endl;
   while (!WindowShouldClose()){
     Vector2 mouse = GetMousePosition();
