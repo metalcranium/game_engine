@@ -247,6 +247,17 @@ class Editor{
 };
 void Draw_Grid(World world);
 void Game();
+bool On_Hovered(Rectangle body, Vector2 mouse){
+  bool hovered;
+  if (mouse.x > body.x and mouse.x < body.x + body.width and
+      mouse.y > body.y and mouse.y < body.y + body.height){
+    hovered = true;
+  }
+  else {
+    hovered = false;
+  }
+  return hovered;
+}
 
 int main(){
   int scr_width = 1200;
@@ -311,13 +322,13 @@ int main(){
       obj->is_static = false;
       world.objects.push_back(obj);
     }
-    
     if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)){
+      int pointx = int(mouse.x);
+      int pointy = int(mouse.y);
       for (int i = 0; i < world.objects.size(); i++){
-        if (CheckCollisionPointRec(mouse, world.objects[i]->collider)){
-          // world.objects.erase(world.objects.begin());
-          std::cout << "index: " << i << std::endl;
-          // std::cout << "count: " << world.objects.size() << std::endl;
+        RigidBody2D obj = *world.objects[i];
+        if(mouse.x > obj.position.x and mouse.x < obj.position.x){
+          std::cout << i << std::endl;
         }
       }
     }
