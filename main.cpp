@@ -213,7 +213,7 @@ class World{
             }
             if (collision.height < collision.width){
               if (!i->is_static){
-                if (sign.y == 1){
+                if (sign.y == -1){
                   i->is_grounded = true;
                 }
                 else{
