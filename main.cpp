@@ -20,11 +20,11 @@ class RigidBody2D{
     Vector2 velocity;
     Vector2 position;
     Vector2 size;
-    float mass;
     Rectangle collider;
     Color color;
     bool is_static;
     bool is_grounded;
+    float mass;
     float fall;
 
     RigidBody2D(){
@@ -385,50 +385,6 @@ void Resolve_World_Collision(std::shared_ptr<Player>player, std::shared_ptr<Worl
         else{
           player->is_grounded = false;
         }
-    }
-  }
-}
-void Resolve_World_Collision(World world){
-  Vector2 sign = {0,0};
-  bool collided;
-  Rectangle collision;
-  for (auto i : world.objects){
-    for (auto j : world.objects){
-      if (i == j){
-        break;
-      }
-      collided = CheckCollisionRecs(i->collider, j->collider);
-      collision = GetCollisionRec(i->collider, j->collider);
-      if (collided){
-        i->is_grounded = true;
-        sign.x = i->collider.x + i->collider.width < j->collider.x + j->collider.width ? 1 : -1;
-        sign.y = i->collider.y + i->collider.height < j->collider.y + j->collider.height ? 1 : -1;
-        if (collision.width < collision.height){
-          if (!i->is_static){
-            i->position.x -= collision.width * sign.x;
-            i->velocity.x = 0;
-          }
-          if (!j->is_static){
-            j->position.x += collision.width * sign.x;
-            j->velocity.x = 0;
-          }
-        }
-        if (collision.height < collision.width){
-          i->is_grounded = true;
-          j->is_grounded = true;
-          if (!i->is_static){
-            i->position.y -= collision.height * sign.y;
-            i->velocity.y = 0;
-          }
-          if (!j->is_static){
-            j->position.y += collision.height * sign.y;
-            j->velocity.y = 0;
-          }
-        }
-      }
-      else{
-        i->is_grounded = false;
-      }
     }
   }
 }
