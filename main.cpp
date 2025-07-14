@@ -325,10 +325,13 @@ int main(){
     if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)){
       int pointx = int(mouse.x);
       int pointy = int(mouse.y);
+      std::cout << pointx << " " << pointy << std::endl;
       for (int i = 0; i < world.objects.size(); i++){
         RigidBody2D obj = *world.objects[i];
-        if(mouse.x > obj.position.x and mouse.x < obj.position.x){
+        if(mouse.x > obj.position.x and mouse.x < obj.position.x + obj .size.x and mouse.y > obj.position.y and mouse.y < obj.position.y + obj.size.y){
+          std::cout << "position: " << obj.position.x << "," << obj.position.y << std::endl;
           std::cout << i << std::endl;
+          world.objects.erase(world.objects.begin()+i);
         }
       }
     }
