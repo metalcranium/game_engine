@@ -9,12 +9,11 @@
 #define gravity 50
 #define fps 60
 
-// class RigidBody2D;
-// class Player;
 // mass, position, velocity, acceleration
 // acceleratino = velocity * delta * mass
 // force = mass * acceleration
 // kinetic energy = .5 * mass * speed^2
+
 class RigidBody2D{
   public: 
     Vector2 velocity;
@@ -247,7 +246,7 @@ class Editor{
 };
 void Draw_Grid(World world);
 void Game();
-bool On_Hovered(Rectangle body, Vector2 mouse){
+bool Is_Hovered(Rectangle body, Vector2 mouse){
   bool hovered;
   if (mouse.x > body.x and mouse.x < body.x + body.width and
       mouse.y > body.y and mouse.y < body.y + body.height){
@@ -285,6 +284,14 @@ int main(){
   world.grid_size = 32;
   world.Load_World();
   std::cout << "count: " << world.objects.size() << std::endl;
+
+
+  Atlas atlas;
+  atlas.grid_size = 32;
+  atlas.texture = LoadTexture("forestgroundtileset.png");
+
+  Vector2 source;
+  
   while (!WindowShouldClose()){
     //update
     Vector2 mouse = GetScreenToWorld2D(GetMousePosition(), camera);
@@ -302,7 +309,13 @@ int main(){
     else if (IsKeyDown(KEY_DOWN)){
       camera.target.y += speed * delta;
     }
-    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) and GetMousePosition().x >= scr_width - 350){
+      // subtracted 26 for offset
+      source = {float(GetMouseX() / 32 - 26)*32, float(GetMouseY() / 32)*32};
+      std::cout << "source: " << source.x << "," << source.y << std::endl;
+
+    }
+    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) and GetMousePosition().x < scr_width - 350 ){
       std::shared_ptr<RigidBody2D>obj = std::make_shared<RigidBody2D>();
       int position_x = int(mouse.x / 32);
       int position_y = int(mouse.y / 32);
@@ -329,7 +342,7 @@ int main(){
       for (int i = 0; i < world.objects.size(); i++){
         RigidBody2D obj = *world.objects[i];
         if(mouse.x > obj.position.x and mouse.x < obj.position.x + obj .size.x and mouse.y > obj.position.y and mouse.y < obj.position.y + obj.size.y){
-          std::cout << "position: " << obj.position.x << "," << obj.position.y << std::endl;
+        //   std::cout << "position: " << obj.position.x << "," << obj.position.y << std::endl;
           std::cout << i << std::endl;
           world.objects.erase(world.objects.begin()+i);
         }
@@ -362,6 +375,8 @@ int main(){
     BeginDrawing();
     ClearBackground(DARKGRAY);
     DrawTextureRec(viewport.texture, screen_rect, {0,0}, WHITE);
+    DrawRectangle(scr_width - 350, 0, 350, scr_height, DARKGRAY);
+    DrawTexture(atlas.texture, scr_width - 350, 0, WHITE );
     EndDrawing();
   }
   CloseWindow();
@@ -387,6 +402,7 @@ void Game(){
   Rectangle collision;
   world.objects.push_back(player);
   world.Load_World();
+
   
   // std::cout << "objects: " << world.objects.size() << std::endl;
   while (!WindowShouldClose()){
