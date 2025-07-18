@@ -259,8 +259,8 @@ bool Is_Hovered(Rectangle body, Vector2 mouse){
 }
 
 int main(){
-  int scr_width = 1200;
-  int scr_height = 600;
+  int scr_width = 1600;
+  int scr_height = 800;
   InitWindow(scr_width, scr_height, "Collisions");
   SetTargetFPS(fps);
 
@@ -311,7 +311,7 @@ int main(){
     }
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) and GetMousePosition().x >= scr_width - 350){
       // subtracted 26 for offset
-      source = {float(GetMouseX() / 32 - 26)*32, float(GetMouseY() / 32)*32};
+      source = {float(GetMouseX()/32 - 39), float(GetMouseY() / 32)*32};
       std::cout << "source: " << source.x << "," << source.y << std::endl;
 
     }
