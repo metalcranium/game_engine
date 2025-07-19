@@ -170,26 +170,32 @@ class World{
         file << i->position.y << " ";
         file << i->size.x << " ";
         file << i->size.y << " ";
+        file << i->source.x << " ";
+        file << i->source.y << " ";
         file << i->is_static << " " ;
         file << "\n";
       }
       file.close();
     }
-    void Load_World(){
+    void Load_World(Texture &texture){
       std::ifstream file;
       file.open("map.txt");
       float x;
       float y;
       float width;
       float height;
+      float sourcex;
+      float sourcey;
       bool solid;
-      while (file >> x >> y >> width >> height >> solid){
+      while (file >> x >> y >> width >> height >> sourcex >> sourcey >> solid){
         std::shared_ptr<RigidBody2D>obj = std::make_shared<RigidBody2D>();
         obj->position.x = x;
         obj->position.y = y;
         obj->size.x = width;
         obj->size.y = height;
+        obj->source = {sourcex, sourcey, 32, 32};
         obj->is_static = solid;
+        obj->texture = texture;
         obj->color = RED;
         objects.push_back(obj);
       }
@@ -286,13 +292,14 @@ int main(){
   World world;
   world.grid_count = (scr_width/32) + (scr_height / 32);
   world.grid_size = 32;
-  world.Load_World();
+  
   std::cout << "count: " << world.objects.size() << std::endl;
 
 
   Atlas atlas;
   atlas.grid_size = 32;
   atlas.texture = LoadTexture("forestgroundtileset.png");
+  world.Load_World(atlas.texture);
 
   Vector2 source;
   
@@ -407,7 +414,9 @@ void Game(){
   std::shared_ptr<Player>player = std::make_shared<Player>();
   Rectangle collision;
   world.objects.push_back(player);
-  world.Load_World();
+  Atlas atlas;
+  atlas.texture = LoadTexture("forestgroundtileset.png");
+  world.Load_World(atlas.texture);
 
   
   // std::cout << "objects: " << world.objects.size() << std::endl;
