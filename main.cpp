@@ -24,6 +24,7 @@ class RigidBody2D{
     bool is_static;
     bool is_grounded;
     float mass;
+    float speed;
     float fall;
     Rectangle source;
     Texture texture;
@@ -230,13 +231,14 @@ class World{
                 j->position.x += collision.width * sign.x;
                 j->is_grounded = false;
             }
-            if (collision.height < collision.width){
-                if (sign.y == -1){
-                  j->is_grounded = true;
-                }
-                else{
-                  j->is_grounded = false;
-                }
+            else if (collision.height < collision.width){
+                // if (sign.y == -1){
+                j->is_grounded = true;
+                // }
+                // else{
+                //   j->is_grounded = false;
+                //   // j->speed = gravity;
+                // }
                 j->position.y += collision.height * sign.y;
                 j->velocity.y = 0;
             }
