@@ -45,7 +45,8 @@ class RigidBody2D{
       }
     }
     virtual void draw(){
-      DrawRectangle(position.x, position.y, size.x, size.y, color);
+      // DrawRectangle(position.x, position.y, size.x, size.y, color);
+      DrawTextureRec(texture, source, position, WHITE);
     }
 };
 class Player : public RigidBody2D{
@@ -152,12 +153,12 @@ class World{
 
     void Update(){
       for (auto i : objects){
-        i->draw();
+        i->update();
       }
     }
     void Draw(){
       for (auto i : objects){
-        i->update();
+        i->draw();
       }
     }
     
@@ -314,7 +315,7 @@ int main(){
     }
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) and GetMousePosition().x >= scr_width - 350){
       // subtracted 26 for offset
-      source = {float(GetMouseX()/32 - 29), float(GetMouseY() / 32)*32};
+      source = {float(GetMouseX()/32 - 29)*32, float(GetMouseY() / 32)*32};
       std::cout << "source: " << source.x << "," << source.y << std::endl;
 
     }
@@ -325,6 +326,8 @@ int main(){
       obj->position = {float(position_x*32), float(position_y*32) };
       obj->size = {32, 32};
       obj->color = RED;
+      obj->source = {source.x, source.y, 32, 32};
+      obj->texture = atlas.texture;
       obj->is_static = true;
       world.objects.push_back(obj);
     }
