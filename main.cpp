@@ -25,6 +25,8 @@ class RigidBody2D{
     bool is_grounded;
     float mass;
     float fall;
+    Rectangle source;
+    Texture texture;
 
     RigidBody2D(){
       velocity = {0,0};
@@ -259,8 +261,9 @@ bool Is_Hovered(Rectangle body, Vector2 mouse){
 }
 
 int main(){
-  int scr_width = 1600;
-  int scr_height = 800;
+  
+  int scr_width = 1280;
+  int scr_height = 720;
   InitWindow(scr_width, scr_height, "Collisions");
   SetTargetFPS(fps);
 
@@ -311,7 +314,7 @@ int main(){
     }
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) and GetMousePosition().x >= scr_width - 350){
       // subtracted 26 for offset
-      source = {float(GetMouseX()/32 - 39), float(GetMouseY() / 32)*32};
+      source = {float(GetMouseX()/32 - 29), float(GetMouseY() / 32)*32};
       std::cout << "source: " << source.x << "," << source.y << std::endl;
 
     }
