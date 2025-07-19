@@ -224,10 +224,11 @@ class World{
           collided = CheckCollisionRecs(i->collider, j->collider);
           collision = GetCollisionRec(i->collider, j->collider);
           if (collided){
-            sign.x = i->collider.x + i->collider.width /2 < j->collider.x + j->collider.width/2 ? 1 : -1;
-            sign.y = i->collider.y + i->collider.height /2 < j->collider.y + j->collider.height/2 ? 1 : -1;
+            sign.x = i->collider.x + i->collider.width < j->collider.x + j->collider.width ? 1 : -1;
+            sign.y = i->collider.y + i->collider.height < j->collider.y + j->collider.height ? 1 : -1;
             if (collision.width < collision.height){
                 j->position.x += collision.width * sign.x;
+                j->is_grounded = false;
             }
             if (collision.height < collision.width){
                 if (sign.y == -1){
