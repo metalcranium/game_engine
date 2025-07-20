@@ -6,14 +6,14 @@
 #include <fstream>
 
 #define delta GetFrameTime()
-#define gravity 50
+#define gravity 200
 #define fps 60
 
 // mass, position, velocity, acceleration
 // acceleratino = velocity * delta * mass
 // force = mass * acceleration
 // kinetic energy = .5 * mass * speed^2
-
+class AnimationPlayer;
 class RigidBody2D{
   public: 
     Vector2 velocity;
@@ -56,6 +56,7 @@ class Player : public RigidBody2D{
     float speed;
     float fall;
     bool can_jump;
+    AnimationPlayer* animation;
 
     Player(){
       velocity = {0,1};
@@ -76,7 +77,7 @@ class Player : public RigidBody2D{
     virtual void update(){
       Vector2Normalize(velocity);
       position.x += velocity.x * speed * delta;
-      position.y += velocity.y * speed * delta;
+      position.y += velocity.y * fall * delta;
       // std::cout << "is grounded: " << is_grounded << std::endl;
 
       collider = {position.x, position.y, size.x, size.y};
@@ -232,19 +233,14 @@ class World{
                 j->is_grounded = false;
             }
             else if (collision.height < collision.width){
-                // if (sign.y == -1){
                 j->is_grounded = true;
-                // }
-                // else{
-                //   j->is_grounded = false;
-                //   // j->speed = gravity;
-                // }
                 j->position.y += collision.height * sign.y;
                 j->velocity.y = 0;
             }
           }
         }
         i->is_grounded = false;
+
       }
     }
 };
