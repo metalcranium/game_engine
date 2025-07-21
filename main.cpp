@@ -38,6 +38,7 @@ class RigidBody2D{
       position.y += velocity.y * 200 * delta;
       collider = {position.x, position.y, size.x, size.y};
 
+
       if (is_static){
         velocity = {0,0};
       }
@@ -69,6 +70,10 @@ class Player : public RigidBody2D{
       is_grounded = false;
       can_jump = false;
       is_static = false;
+      source = {0,0,32,32};
+      texture = LoadTexture("hero.png");
+
+
       std::cout << "player created" << std::endl;
     }
     ~Player(){
@@ -81,10 +86,15 @@ class Player : public RigidBody2D{
       // std::cout << "is grounded: " << is_grounded << std::endl;
 
       collider = {position.x, position.y, size.x, size.y};
+      if (velocity.x < 0){
+	
+      }
       input();
+
     }
     virtual void draw(){
-      DrawRectangle(position.x, position.y, size.x, size.y, BLUE);
+      // DrawRectangle(position.x, position.y, size.x, size.y, BLUE);
+	DrawTextureRec(texture, source, position, WHITE);
     }
     void input(){
       if (IsKeyDown(KEY_LEFT)){
@@ -411,8 +421,8 @@ void Game(){
   world.grid_count = 25;
   world.grid_size = 32;
   std::shared_ptr<Player>player = std::make_shared<Player>();
-  Rectangle collision;
   world.objects.push_back(player);
+  Rectangle collision;
   Atlas atlas;
   atlas.texture = LoadTexture("forestgroundtileset.png");
   world.Load_World(atlas.texture);
