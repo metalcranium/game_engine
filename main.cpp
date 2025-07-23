@@ -15,7 +15,7 @@
 // kinetic energy = .5 * mass * speed^2
 class AnimationPlayer;
 class RigidBody2D{
-  public: 
+  public:
     Vector2 velocity;
     Vector2 position;
     Vector2 size;
@@ -37,7 +37,6 @@ class RigidBody2D{
     virtual void update(){
       position.y += velocity.y * 200 * delta;
       collider = {position.x, position.y, size.x, size.y};
-
 
       if (is_static){
         velocity = {0,0};
