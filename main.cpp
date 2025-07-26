@@ -27,7 +27,6 @@ public:
     std::cout << frame_counter << std::endl;
     std::cout << current_frame << std::endl;
     std::cout << frames << std::endl;
-    frame_counter++;
     if (frame_counter >= fps/frame_speed){
       frame_counter = 0;
       current_frame++;
@@ -119,6 +118,7 @@ class Player : public RigidBody2D{
       // std::cout << "is grounded: " << is_grounded << std::endl;
       collider = {position.x, position.y, size.x, size.y};
       input();
+      animation.frame_counter++;
       source.x = animation.animate();   
       
     }
