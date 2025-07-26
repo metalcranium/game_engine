@@ -41,6 +41,9 @@ struct AnimationPlayer{
     frame_speed = fr_speed;
     frames = frs;
   }
+  void draw(Texture texture, Rectangle source, Vector2 position){
+    DrawTextureRec(texture, source, position, RAYWHITE);
+  }
 };
 class RigidBody2D{
   public:
@@ -86,7 +89,7 @@ class Player : public RigidBody2D{
     Vector2 speed;
     float fall;
     bool can_jump;
-    AnimationPlayer animation;
+    AnimationPlayer* animation;
 
     Player(){
       velocity = {0,1};
@@ -102,15 +105,16 @@ class Player : public RigidBody2D{
       source = {0,0,32,32};
       atlas_texture = LoadTexture("herowalk.png");
       idle_texture = LoadTexture("hero.png");
-      
-      animation.frame_counter = 0;
-      animation.current_frame = 0;
-      animation.frame_speed = 10;
+      animation = new(AnimationPlayer);
+      animation->frame_counter = 0;
+      animation->current_frame = 0;
+      animation->frame_speed = 10;
 
       std::cout << "player created" << std::endl;
     }
     ~Player(){
       std::cout << "player destroyed" << std::endl;
+      delete animation;
     }
     virtual void update(){
       Vector2Normalize(velocity);
@@ -119,12 +123,13 @@ class Player : public RigidBody2D{
       // std::cout << "is grounded: " << is_grounded << std::endl;
       collider = {position.x, position.y, size.x, size.y};
       input();
-      source.x = animation.animate();   
+      source.x = animation->animate();   
       
     }
     virtual void draw(){
       // DrawRectangle(position.x, position.y, size.x, size.y, BLUE);
-      DrawTextureRec(texture, source, position, WHITE);
+      // DrawTextureRec(texture, source, position, WHITE);
+      animation->draw(texture, source, position);
     }
     void input(){
       if (IsKeyDown(KEY_LEFT)){
@@ -168,13 +173,13 @@ class Player : public RigidBody2D{
     void move_left(){
       texture = atlas_texture;
       source.width = size.x;
-      animation.update(10, 5);
+      animation->update(10, 5);
       velocity.x = -1;
     }
     void move_right(){
       texture = atlas_texture;
       source.width = -size.x;
-      animation.update(10, 5);
+      animation->update(10, 5);
       velocity.x = 1;
     }
     void idle(){
