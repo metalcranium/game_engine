@@ -10,7 +10,7 @@
 #define fps 60
 
 // mass, position, velocity, acceleration
-// acceleratino = velocity * delta * mass
+// acceleration = velocity * delta * mass
 // force = mass * acceleration
 // kinetic energy = .5 * mass * speed^2
 
