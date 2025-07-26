@@ -22,7 +22,7 @@ struct AnimationPlayer{
   int frames;
 
   float animate(){
-    float sourcex;
+    float source_x;
     std::cout << frame_speed << std::endl;
     std::cout << frame_counter << std::endl;
     std::cout << current_frame << std::endl;
@@ -32,10 +32,10 @@ struct AnimationPlayer{
       frame_counter = 0;
       current_frame++;
       if (current_frame > frames){
-        sourcex = float(current_frame) * 32;
+        source_x = float(current_frame) * 32;
       }
     }
-    return sourcex;
+    return source_x;
   }
   void update(int fr_speed, int frs){
     frame_speed = fr_speed;
