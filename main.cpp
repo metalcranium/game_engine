@@ -13,7 +13,28 @@
 // acceleratino = velocity * delta * mass
 // force = mass * acceleration
 // kinetic energy = .5 * mass * speed^2
-class AnimationPlayer;
+
+struct AnimationPlayer{
+  int frame_speed = 10;
+  int frame_counter;
+  int current_frame;
+  int frames;
+
+  float animate(){
+    float sourcex;
+    // std::cout << current_frame << std::endl;
+    std::cout << "frame speed: " << frame_speed << std::endl;
+    std::cout << "fps: " << fps << std::endl;
+    if (frame_counter >= fps / frame_speed){
+      frame_counter = 0;
+      current_frame++;
+      if (current_frame > frames){
+        sourcex = float(current_frame) * 32;
+      }
+    }
+    return sourcex;
+  }
+};
 class RigidBody2D{
   public:
     Vector2 velocity;
@@ -27,7 +48,9 @@ class RigidBody2D{
     float speed;
     float fall;
     Rectangle source;
+    Texture atlas_texture;
     Texture texture;
+    Texture idle_texture;
 
     RigidBody2D(){
       velocity = {0,0};
@@ -56,7 +79,7 @@ class Player : public RigidBody2D{
     float speed;
     float fall;
     bool can_jump;
-    AnimationPlayer* animation;
+    AnimationPlayer animation;
 
     Player(){
       velocity = {0,1};
@@ -70,7 +93,13 @@ class Player : public RigidBody2D{
       can_jump = false;
       is_static = false;
       source = {0,0,32,32};
-      texture = LoadTexture("hero.png");
+      atlas_texture = LoadTexture("herowalk.png");
+      idle_texture = LoadTexture("hero.png");
+      
+      animation.frame_counter = 0;
+      animation.current_frame = 0;
+      animation.frame_speed = 10;
+
 
 
       std::cout << "player created" << std::endl;
@@ -83,17 +112,14 @@ class Player : public RigidBody2D{
       position.x += velocity.x * speed * delta;
       position.y += velocity.y * fall * delta;
       // std::cout << "is grounded: " << is_grounded << std::endl;
-
       collider = {position.x, position.y, size.x, size.y};
-      if (velocity.x < 0){
-	
-      }
       input();
-
+      source.x = animation.animate();   
+      
     }
     virtual void draw(){
       // DrawRectangle(position.x, position.y, size.x, size.y, BLUE);
-	DrawTextureRec(texture, source, position, WHITE);
+      DrawTextureRec(texture, source, position, WHITE);
     }
     void input(){
       if (IsKeyDown(KEY_LEFT)){
@@ -103,7 +129,7 @@ class Player : public RigidBody2D{
         move_right();
       }
       else{
-        velocity.x -= (velocity.x * delta)*mass;
+        idle();
       }
       if (IsKeyDown(KEY_UP) and can_jump){
           jump();
@@ -118,8 +144,8 @@ class Player : public RigidBody2D{
       //   velocity.y = 0;
       // }
       if (is_grounded){
-        // velocity.y = 0;
         can_jump = true;
+        velocity.y = 0;
       }
       else{
         can_jump = false;
@@ -135,10 +161,22 @@ class Player : public RigidBody2D{
       velocity.y += 5 * delta;
     }
     void move_left(){
+      texture = atlas_texture;
+      source.width = size.x;
+      animation.frame_speed = 10;
+      animation.frames = 5;
       velocity.x = -1;
     }
     void move_right(){
-      velocity.x = 1; 
+      texture = atlas_texture;
+      source.width = -size.x;
+      animation.frame_speed = 10;
+      animation.frames = 5;
+      velocity.x = 1;
+    }
+    void idle(){
+      texture = idle_texture;
+      velocity.x -= (velocity.x * delta)*mass;
     }
     void bounce(){
       mass = 5;
@@ -238,25 +276,19 @@ class World{
             sign.x = i->collider.x + i->collider.width < j->collider.x + j->collider.width ? 1 : -1;
             sign.y = i->collider.y + i->collider.height < j->collider.y + j->collider.height ? 1 : -1;
             if (collision.width < collision.height){
-                j->position.x += collision.width * sign.x;
-                j->is_grounded = false;
+              j->position.x += collision.width * sign.x;
+              j->is_grounded = false;
             }
             else if (collision.height < collision.width){
-                j->is_grounded = true;
-                j->position.y += collision.height * sign.y;
-                j->velocity.y = 0;
+              j->is_grounded = true;
+              j->position.y += collision.height * sign.y;
+              j->velocity.y = 0;
             }
           }
         }
         i->is_grounded = false;
-
       }
     }
-};
-class AnimationPlayer{
-  int frame_speed;
-  int frame_counter;
-  int current_frame;
 };
 class Editor{
   
