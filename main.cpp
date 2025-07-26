@@ -14,18 +14,21 @@
 // force = mass * acceleration
 // kinetic energy = .5 * mass * speed^2
 
-struct AnimationPlayer{
-  int frame_speed = 10;
+class AnimationPlayer{
+public: 
+  int frame_speed;
   int frame_counter;
   int current_frame;
   int frames;
 
   float animate(){
     float sourcex;
-    // std::cout << current_frame << std::endl;
-    std::cout << "frame speed: " << frame_speed << std::endl;
-    std::cout << "fps: " << fps << std::endl;
-    if (frame_counter >= fps / frame_speed){
+    std::cout << frame_speed << std::endl;
+    std::cout << frame_counter << std::endl;
+    std::cout << current_frame << std::endl;
+    std::cout << frames << std::endl;
+    frame_counter++;
+    if (frame_counter >= fps/frame_speed){
       frame_counter = 0;
       current_frame++;
       if (current_frame > frames){
@@ -33,6 +36,10 @@ struct AnimationPlayer{
       }
     }
     return sourcex;
+  }
+  void update(int fr_speed, int frs){
+    frame_speed = fr_speed;
+    frames = frs;
   }
 };
 class RigidBody2D{
@@ -75,8 +82,8 @@ class RigidBody2D{
 };
 class Player : public RigidBody2D{
   public:
-    const float SPEED = 200;
-    float speed;
+    const float SPEED = 100;
+    Vector2 speed;
     float fall;
     bool can_jump;
     AnimationPlayer animation;
@@ -86,8 +93,8 @@ class Player : public RigidBody2D{
       position = {600, 0};
       size = {32, 32};
       mass = 6;
-      speed = SPEED;
       fall = gravity;
+      speed = {SPEED, fall};
       collider = {position.x, position.y, size.x, size.y};
       is_grounded = false;
       can_jump = false;
@@ -100,8 +107,6 @@ class Player : public RigidBody2D{
       animation.current_frame = 0;
       animation.frame_speed = 10;
 
-
-
       std::cout << "player created" << std::endl;
     }
     ~Player(){
@@ -109,8 +114,8 @@ class Player : public RigidBody2D{
     }
     virtual void update(){
       Vector2Normalize(velocity);
-      position.x += velocity.x * speed * delta;
-      position.y += velocity.y * fall * delta;
+      position.x += velocity.x * speed.x * delta;
+      position.y += velocity.y * speed.y * delta;
       // std::cout << "is grounded: " << is_grounded << std::endl;
       collider = {position.x, position.y, size.x, size.y};
       input();
@@ -163,15 +168,13 @@ class Player : public RigidBody2D{
     void move_left(){
       texture = atlas_texture;
       source.width = size.x;
-      animation.frame_speed = 10;
-      animation.frames = 5;
+      animation.update(10, 5);
       velocity.x = -1;
     }
     void move_right(){
       texture = atlas_texture;
       source.width = -size.x;
-      animation.frame_speed = 10;
-      animation.frames = 5;
+      animation.update(10, 5);
       velocity.x = 1;
     }
     void idle(){
@@ -210,7 +213,6 @@ class World{
         i->draw();
       }
     }
-    
     void Save_World(){
       std::ofstream file;
       file.open("map.txt");
@@ -308,7 +310,6 @@ bool Is_Hovered(Rectangle body, Vector2 mouse){
 }
 
 int main(){
-  
   int scr_width = 1280;
   int scr_height = 720;
   InitWindow(scr_width, scr_height, "Collisions");
@@ -419,7 +420,6 @@ int main(){
       i->draw();
     }
     Draw_Grid(world);
-
 
     EndMode2D();
     EndTextureMode();
