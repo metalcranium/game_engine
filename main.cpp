@@ -83,7 +83,6 @@ class RigidBody2D{
       }
     }
     virtual void draw(){
-      // DrawRectangle(position.x, position.y, size.x, size.y, color);
       DrawTextureRec(texture, source, position, WHITE);
     }
 };
@@ -93,7 +92,7 @@ class Player : public RigidBody2D{
     Vector2 speed;
     float fall;
     bool can_jump;
-    // AnimationPlayer* animation;
+    AnimationPlayer* animation;
     int frame_counter;
     int current_frame;
     int frame_speed;
@@ -113,10 +112,6 @@ class Player : public RigidBody2D{
       source = {0,0,32,32};
       atlas_texture = LoadTexture("herowalk.png");
       idle_texture = LoadTexture("hero.png");
-      // animation = new(AnimationPlayer);
-      // animation->frame_counter = 0;
-      // animation->current_frame = 0;
-      // animation->frame_speed = 10;
       frame_counter = 0;
       current_frame = 0;
       frame_speed = 10;
@@ -125,7 +120,6 @@ class Player : public RigidBody2D{
     }
     ~Player(){
       std::cout << "player destroyed" << std::endl;
-      // delete animation;
     }
     virtual void update(){
       Vector2Normalize(velocity);
@@ -134,7 +128,6 @@ class Player : public RigidBody2D{
       // std::cout << "is grounded: " << is_grounded << std::endl;
       collider = {position.x, position.y, size.x, size.y};
       input();
-      // source.x = animation->animate();   
 
       frame_counter++;
       if (frame_counter >= fps/frame_speed){
@@ -144,12 +137,9 @@ class Player : public RigidBody2D{
           source.x = float(current_frame) * 32;
         }
       }
-      
     }
     virtual void draw(){
-      // DrawRectangle(position.x, position.y, size.x, size.y, BLUE);
       DrawTextureRec(texture, source, position, WHITE);
-      // animation->draw(texture, source, position);
     }
     void input(){
       if (IsKeyDown(KEY_LEFT)){
@@ -193,13 +183,11 @@ class Player : public RigidBody2D{
     void move_left(){
       texture = atlas_texture;
       source.width = size.x;
-      // animation->update(10, 5);
       velocity.x = -1;
     }
     void move_right(){
       texture = atlas_texture;
       source.width = -size.x;
-      // animation->update(10, 5);
       velocity.x = 1;
     }
     void idle(){
@@ -339,9 +327,6 @@ int main(){
   int scr_height = 720;
   InitWindow(scr_width, scr_height, "Collisions");
   SetTargetFPS(fps);
-
-// TODO: Viewport zoom  
-// TODO: mouse ?
 
   Camera2D camera;
   camera.offset = {(float(scr_width)/2), (float(scr_height)/2)};
