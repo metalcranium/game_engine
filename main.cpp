@@ -188,12 +188,18 @@ public:
 };
 class Arrow : public Projectile{
 public:
+  Vector2 direction;
   Arrow(){
     texture = LoadTexture("arrow.png");
     source = {0,0,32,32};
     speed = 300;
+
   }
   ~Arrow(){
+  }
+  virtual void update(){
+    velocity = Vector2Normalize(direction - position);
+    position += velocity * speed * delta;
   }
 };
 
@@ -345,7 +351,6 @@ int main(){
   
   std::cout << "count: " << world.objects.size() << std::endl;
 
-
   Atlas atlas;
   atlas.grid_size = 32;
   atlas.texture = LoadTexture("forestgroundtileset.png");
@@ -466,30 +471,22 @@ void Game(){
   Atlas atlas;
   atlas.texture = LoadTexture("forestgroundtileset.png");
   world.Load_World(atlas.texture);
-  std::vector<Projectile>bullets;
-
   
-  // std::cout << "objects: " << world.objects.size() << std::endl;
   while (!WindowShouldClose()){
     Vector2 mouse = GetMousePosition();
     // update
     world.Resolve_World_Collision();
     world.Update();
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
-      // Arrow arrow;
-      // arrow.position = GetMousePosition();
-      // bullets.push_back(arrow);
       std::shared_ptr<Arrow>arrow = std::make_shared<Arrow>();
-      arrow->position = GetMousePosition();
+      arrow->position = player->position;
+      arrow->direction = GetMousePosition();
       world.objects.push_back(arrow);
     }
     // draw
     BeginDrawing();
     ClearBackground(DARKGRAY);
     world.Draw();
-    for (auto all : bullets){
-      all.draw();
-    }
     EndDrawing();
   }
   CloseWindow();
