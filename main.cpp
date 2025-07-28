@@ -26,11 +26,6 @@ struct AnimationPlayer{
     std::cout << "animation deleted" << std::endl;
   }
   float animate(Rectangle &source){
-    float source_x;
-    std::cout << frame_speed << std::endl;
-    std::cout << frame_counter << std::endl;
-    std::cout << current_frame << std::endl;
-    std::cout << frames << std::endl;
     frame_counter++;
     if (frame_counter >= fps/frame_speed){
       frame_counter = 0;
@@ -90,10 +85,6 @@ class Player : public RigidBody2D{
     float fall;
     bool can_jump;
     AnimationPlayer* animation;
-    int frame_counter;
-    int current_frame;
-    int frame_speed;
-    int frames;
 
     Player(){
       velocity = {0,1};
@@ -109,17 +100,10 @@ class Player : public RigidBody2D{
       source = {0,0,32,32};
       atlas_texture = LoadTexture("herowalk.png");
       idle_texture = LoadTexture("hero.png");
-<<<<<<< HEAD
       animation = new(AnimationPlayer);
       animation->frame_counter = 0;
       animation->current_frame = 0;
       animation->frame_speed = 10;
-=======
-      frame_counter = 0;
-      current_frame = 0;
-      frame_speed = 10;
-      frames = 5;
->>>>>>> 2eee2f33cc2093715c8e9344ae8a2c05502c5221
       std::cout << "player created" << std::endl;
     }
     ~Player(){
@@ -132,21 +116,7 @@ class Player : public RigidBody2D{
       // std::cout << "is grounded: " << is_grounded << std::endl;
       collider = {position.x, position.y, size.x, size.y};
       input();
-<<<<<<< HEAD
       animation->animate(source);   
-
-      
-=======
-
-      frame_counter++;
-      if (frame_counter >= fps/frame_speed){
-        frame_counter = 0;
-        current_frame++;
-        if (current_frame > frames){
-          source.x = float(current_frame) * 32;
-        }
-      }
->>>>>>> 2eee2f33cc2093715c8e9344ae8a2c05502c5221
     }
     virtual void draw(){
       DrawTextureRec(texture, source, position, WHITE);
@@ -208,6 +178,25 @@ class Player : public RigidBody2D{
       mass = 5;
     }
 };
+class Projectile : public RigidBody2D{
+public:
+  Projectile(){
+  }
+  ~Projectile(){
+  }
+
+};
+class Arrow : public Projectile{
+public:
+  Arrow(){
+    texture = LoadTexture("arrow.png");
+    source = {0,0,32,32};
+    speed = 300;
+  }
+  ~Arrow(){
+  }
+};
+
 struct Tile{
   Vector2 position;
   Vector2 size;
@@ -477,6 +466,7 @@ void Game(){
   Atlas atlas;
   atlas.texture = LoadTexture("forestgroundtileset.png");
   world.Load_World(atlas.texture);
+  std::vector<Projectile>bullets;
 
   
   // std::cout << "objects: " << world.objects.size() << std::endl;
@@ -486,36 +476,21 @@ void Game(){
     world.Resolve_World_Collision();
     world.Update();
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
-      std::shared_ptr<RigidBody2D>obj = std::make_shared<RigidBody2D>();
-      int position_x = int(mouse.x / 32);
-      int position_y = int(mouse.y / 32);
-      obj->position = {float(position_x*32), float(position_y*32) };
-      obj->size = {32, 32};
-      obj->color = RED;
-      obj->is_static = true;
-      world.objects.push_back(obj);
-    }
-    if (IsMouseButtonPressed(MOUSE_BUTTON_MIDDLE)){
-      std::shared_ptr<RigidBody2D>block = std::make_shared<RigidBody2D>();
-      block->position = {GetMousePosition().x, GetMousePosition().y};
-      block->size = {32,32};
-      block->color = YELLOW;
-      block->is_static = false;
-      world.objects.push_back(block);
-    }
-    if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)){
-      for (int i = 0; i < world.objects.size(); i++){
-        if (CheckCollisionPointRec(GetMousePosition(), world.objects[i]->collider)){
-          world.objects.erase(world.objects.begin()+ i);
-        }
-      }
+      // Arrow arrow;
+      // arrow.position = GetMousePosition();
+      // bullets.push_back(arrow);
+      std::shared_ptr<Arrow>arrow = std::make_shared<Arrow>();
+      arrow->position = GetMousePosition();
+      world.objects.push_back(arrow);
     }
     // draw
     BeginDrawing();
     ClearBackground(DARKGRAY);
     world.Draw();
+    for (auto all : bullets){
+      all.draw();
+    }
     EndDrawing();
   }
-  world.Print_World();
   CloseWindow();
 }
