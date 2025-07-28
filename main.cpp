@@ -25,7 +25,7 @@ struct AnimationPlayer{
   ~AnimationPlayer(){
     std::cout << "animation deleted" << std::endl;
   }
-  float animate(){
+  float animate(Rectangle &source){
     float source_x;
     std::cout << frame_speed << std::endl;
     std::cout << frame_counter << std::endl;
@@ -36,17 +36,14 @@ struct AnimationPlayer{
       frame_counter = 0;
       current_frame++;
       if (current_frame > frames){
-        source_x = float(current_frame) * 32;
+        source.x = float(current_frame) * 32;
       }
     }
-    return source_x;
+    return source.x;
   }
   void update(int fr_speed, int frs){
     frame_speed = fr_speed;
     frames = frs;
-  }
-  void draw(Texture texture, Rectangle source, Vector2 position){
-    DrawTextureRec(texture, source, position, RAYWHITE);
   }
 };
 class RigidBody2D{
@@ -93,7 +90,7 @@ class Player : public RigidBody2D{
     Vector2 speed;
     float fall;
     bool can_jump;
-    // AnimationPlayer* animation;
+    AnimationPlayer* animation;
     int frame_counter;
     int current_frame;
     int frame_speed;
@@ -113,14 +110,10 @@ class Player : public RigidBody2D{
       source = {0,0,32,32};
       atlas_texture = LoadTexture("herowalk.png");
       idle_texture = LoadTexture("hero.png");
-      // animation = new(AnimationPlayer);
-      // animation->frame_counter = 0;
-      // animation->current_frame = 0;
-      // animation->frame_speed = 10;
-      frame_counter = 0;
-      current_frame = 0;
-      frame_speed = 10;
-      frames = 5;
+      animation = new(AnimationPlayer);
+      animation->frame_counter = 0;
+      animation->current_frame = 0;
+      animation->frame_speed = 10;
       std::cout << "player created" << std::endl;
     }
     ~Player(){
@@ -134,16 +127,8 @@ class Player : public RigidBody2D{
       // std::cout << "is grounded: " << is_grounded << std::endl;
       collider = {position.x, position.y, size.x, size.y};
       input();
-      // source.x = animation->animate();   
+      animation->animate(source);   
 
-      frame_counter++;
-      if (frame_counter >= fps/frame_speed){
-        frame_counter = 0;
-        current_frame++;
-        if (current_frame > frames){
-          source.x = float(current_frame) * 32;
-        }
-      }
       
     }
     virtual void draw(){
