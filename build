@@ -1,6 +1,6 @@
 #! /bin/bash
 
-g++ -o main main.cpp \
+zig c++ -o main main.cpp \
 -lraylib \
 
 ./main
