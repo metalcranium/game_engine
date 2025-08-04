@@ -166,6 +166,8 @@ public:
 };
 class Projectile : public RigidBody2D {
 public:
+  Vector2 origin;
+  Rectangle destination;
   Projectile() {}
   ~Projectile() {}
 };
@@ -173,21 +175,28 @@ class Arrow : public Projectile {
 public:
   Vector2 direction;
   float rotation;
+
   Arrow() {
+    // velocity = Vector2Normalize(position - direction);
     texture = LoadTexture("arrow.png");
     source = {0, 0, 32, 32};
     speed = 300;
   }
   ~Arrow() {}
   void update() {
-    velocity = Vector2Normalize(direction - position);
     position += velocity * speed * delta;
-    rotation++;
+    float angle = atan2(velocity.y, velocity.x);
+    if (angle < 0){
+      angle += 2 * PI;
+    }
+    angle = fmod(angle, 2*PI);
+    rotation = -angle;
+
+    std::cout << "rotation: " << rotation << std::endl;
   }
   void draw() {
-    DrawTexturePro(texture, source, collider, position, rotation, WHITE);
-    
-    // DrawTextureRec(texture, source, position, WHITE);
+
+    DrawTextureEx(texture, position, rotation, 1, WHITE);
   }
 };
 
@@ -475,8 +484,10 @@ void Game() {
     world.Update();
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
       std::shared_ptr<Arrow> arrow = std::make_shared<Arrow>();
+
       arrow->position = player->position;
       arrow->direction = GetMousePosition();
+      arrow->velocity = Vector2Normalize(arrow->direction - arrow->position);
       world.objects.push_back(arrow);
     }
     if (IsKeyPressed(KEY_F8)) {
