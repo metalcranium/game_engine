@@ -3,6 +3,7 @@
 #include <memory>
 #include <raylib.h>
 #include <raymath.h>
+#include <cmath>
 #include <vector>
 
 #define delta GetFrameTime()
@@ -175,24 +176,26 @@ class Arrow : public Projectile {
 public:
   Vector2 direction;
   float rotation;
+  float angle;
 
   Arrow() {
-    // velocity = Vector2Normalize(position - direction);
     texture = LoadTexture("arrow.png");
     source = {0, 0, 32, 32};
     speed = 300;
   }
   ~Arrow() {}
   void update() {
+    velocity = Vector2Normalize(direction - position);
     position += velocity * speed * delta;
-    float angle = atan2(velocity.y, velocity.x);
-    if (angle < 0){
-      angle += 2 * PI;
-    }
-    angle = fmod(angle, 2*PI);
-    rotation = -angle;
+    // angle = atan2(velocity.y, velocity.x);
+    // if (angle < 0){
+    //   angle += 2 * PI;
+    // }
+    // rotation = fmod(angle, 2*PI);
+    // rotation = -angle;
 
-    std::cout << "rotation: " << rotation << std::endl;
+    rotation = angle * (180/M_PI) + 180 ;
+    // std::cout << "rotation: " << rotation << std::endl;
   }
   void draw() {
 
@@ -269,9 +272,10 @@ public:
   }
   void Print_World() {
     for (auto obj : objects) {
-      std::cout << obj->position.x << " " << obj->position.y << " "
-                << obj->size.x << " " << obj->size.y << " " << obj->is_static
-                << std::endl;
+      // std::cout << obj->position.x << " " << obj->position.y << " "
+      //           << obj->size.x << " " << obj->size.y << " " << obj->is_static
+      //           << std::endl;
+      // std::cout << obj->rotation << std::endl;
     }
   }
   void Resolve_World_Collision() {
@@ -479,6 +483,10 @@ void Game() {
 
   while (!WindowShouldClose()) {
     Vector2 mouse = GetMousePosition();
+    // float angle = std::atan2(mouse.y - player->position.y, mouse.x - player->position.x);
+    // float rotation = angle * (180/M_PI) + 180 ;
+    // std::cout << "angle: " << rotation << std::endl;
+
     // update
     world.Resolve_World_Collision();
     world.Update();
@@ -486,8 +494,10 @@ void Game() {
       std::shared_ptr<Arrow> arrow = std::make_shared<Arrow>();
 
       arrow->position = player->position;
-      arrow->direction = GetMousePosition();
+      arrow->direction = {mouse.x, mouse.y};
       arrow->velocity = Vector2Normalize(arrow->direction - arrow->position);
+      arrow->angle = atan2(mouse.y - player->position.y, mouse.x - player->position.x);
+      // std::cout << arrow->angle << std::endl;
       world.objects.push_back(arrow);
     }
     if (IsKeyPressed(KEY_F8)) {
