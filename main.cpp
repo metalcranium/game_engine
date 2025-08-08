@@ -194,7 +194,7 @@ public:
     // rotation = fmod(angle, 2*PI);
     // rotation = -angle;
 
-    rotation = angle * (180/M_PI) + 180 ;
+    rotation = angle * (180/M_PI) + 180;
     // std::cout << "rotation: " << rotation << std::endl;
   }
   void draw() {
