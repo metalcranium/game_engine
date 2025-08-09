@@ -452,6 +452,7 @@ int main() {
     EndDrawing();
   }
   CloseWindow();
+  return 0;
 }
 void Draw_Grid(World world) {
   for (float i = 0; i <= world.grid_count; i++) {
