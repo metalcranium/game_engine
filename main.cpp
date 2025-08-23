@@ -182,9 +182,12 @@ public:
     texture = LoadTexture("arrow.png");
     source = {0, 0, 32, 32};
     speed = 300;
+
   }
   ~Arrow() {}
   void update() {
+
+    rotation = angle * (180/M_PI) + 180;
     velocity = Vector2Normalize(direction - position);
     position += velocity * speed * delta;
     // angle = atan2(velocity.y, velocity.x);
@@ -194,8 +197,7 @@ public:
     // rotation = fmod(angle, 2*PI);
     // rotation = -angle;
 
-    rotation = angle * (180/M_PI) + 180;
-    // std::cout << "rotation: " << rotation << std::endl;
+        // std::cout << "rotation: " << rotation << std::endl;
   }
   void draw() {
 
@@ -377,8 +379,8 @@ int main() {
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) and
         GetMousePosition().x >= scr_width - 350) {
       // subtracted 26 for offset
-      source = {float(GetMouseX() / 32 - 29) * 32,
-                float(GetMouseY() / 32) * 32};
+      source = {(GetMousePosition().x / 32 - 29) * 32,
+                (GetMousePosition().y / 32) * 32};
       std::cout << "source: " << source.x << "," << source.y << std::endl;
     }
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) and
@@ -494,7 +496,7 @@ void Game() {
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
       std::shared_ptr<Arrow> arrow = std::make_shared<Arrow>();
 
-      arrow->position = player->position;
+      arrow->position = {player->position.x, player->position.y};
       arrow->direction = {mouse.x, mouse.y};
       arrow->velocity = Vector2Normalize(arrow->direction - arrow->position);
       arrow->angle = atan2(mouse.y - player->position.y, mouse.x - player->position.x);
