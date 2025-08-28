@@ -182,6 +182,7 @@ public:
     texture = LoadTexture("arrow.png");
     source = {0, 0, 32, 32};
     speed = 300;
+    std::cout << position.x << "," << position.y << std::endl;
 
   }
   ~Arrow() {}
@@ -189,7 +190,9 @@ public:
 
     rotation = angle * (180/M_PI) + 180;
     velocity = Vector2Normalize(direction - position);
-    position += velocity * speed * delta;
+    // rotation++;
+    destination.x += velocity.x * speed * delta;
+    destination.y += velocity.y * speed * delta;
     // angle = atan2(velocity.y, velocity.x);
     // if (angle < 0){
     //   angle += 2 * PI;
@@ -200,8 +203,8 @@ public:
         // std::cout << "rotation: " << rotation << std::endl;
   }
   void draw() {
-
-    DrawTextureEx(texture, position, rotation, 1, WHITE);
+    DrawTexturePro(texture,source,destination,origin,rotation,WHITE);
+    // DrawTextureEx(texture, position, rotation, 1, WHITE);
   }
 };
 
@@ -496,10 +499,12 @@ void Game() {
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
       std::shared_ptr<Arrow> arrow = std::make_shared<Arrow>();
 
-      arrow->position = {player->position.x, player->position.y};
+      arrow->position = {player->position.x + 16, player->position.y};
       arrow->direction = {mouse.x, mouse.y};
       arrow->velocity = Vector2Normalize(arrow->direction - arrow->position);
       arrow->angle = atan2(mouse.y - player->position.y, mouse.x - player->position.x);
+      arrow->destination = {0+player->position.x+16, 0+player->position.y+16, arrow->size.x, arrow->size.y };
+      arrow->origin = {arrow->size.x/2 , arrow->size.y/2};
       // std::cout << arrow->angle << std::endl;
       world.objects.push_back(arrow);
     }
