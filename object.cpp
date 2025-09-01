@@ -16,4 +16,5 @@ void Object::update(){
 	}
 }
 void Object::draw(){
+	DrawTextureRec(texture, source, position, WHITE);
 }

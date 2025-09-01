@@ -40,7 +40,7 @@ struct AnimationPlayer {
     frames = frs;
   }
 };
-class RigidBody2D {
+class Object {
 public:
   Vector2 velocity;
   Vector2 position;
@@ -57,7 +57,7 @@ public:
   Texture texture;
   Texture idle_texture;
 
-  RigidBody2D() {
+  Object() {
     velocity = {0, 0};
     size = {32, 32};
     fall = gravity;
@@ -74,7 +74,7 @@ public:
   }
   virtual void draw() { DrawTextureRec(texture, source, position, WHITE); }
 };
-class Player : public RigidBody2D {
+class Player : public Object {
 public:
   const float SPEED = 100;
   Vector2 speed;
@@ -94,8 +94,8 @@ public:
     can_jump = false;
     is_static = false;
     source = {0, 0, 32, 32};
-    atlas_texture = LoadTexture("herowalk.png");
-    idle_texture = LoadTexture("hero.png");
+    atlas_texture = LoadTexture("Assets/herowalk.png");
+    idle_texture = LoadTexture("Assets/hero.png");
     animation = new (AnimationPlayer);
     animation->frame_counter = 0;
     animation->current_frame = 0;
@@ -165,7 +165,7 @@ public:
   }
   void bounce() { mass = 5; }
 };
-class Projectile : public RigidBody2D {
+class Projectile : public Object {
 public:
   Vector2 origin;
   Rectangle destination;
@@ -179,7 +179,7 @@ public:
   float angle;
 
   Arrow() {
-    texture = LoadTexture("arrow.png");
+    texture = LoadTexture("Assets/arrow.png");
     source = {0, 0, 32, 32};
     speed = 300;
     std::cout << position.x << "," << position.y << std::endl;
@@ -222,7 +222,7 @@ class World {
 public:
   int grid_count;
   float grid_size;
-  std::vector<std::shared_ptr<RigidBody2D>> objects;
+  std::vector<std::shared_ptr<Object>> objects;
   std::vector<Tile> background;
   std::vector<Tile> foreground;
 
@@ -262,7 +262,7 @@ public:
     float sourcey;
     bool solid;
     while (file >> x >> y >> width >> height >> sourcex >> sourcey >> solid) {
-      std::shared_ptr<RigidBody2D> obj = std::make_shared<RigidBody2D>();
+      std::shared_ptr<Object> obj = std::make_shared<Object>();
       obj->position.x = x;
       obj->position.y = y;
       obj->size.x = width;
@@ -359,7 +359,7 @@ int main() {
 
   Atlas atlas;
   atlas.grid_size = 32;
-  atlas.texture = LoadTexture("forestgroundtileset.png");
+  atlas.texture = LoadTexture("Assets/forestgroundtileset.png");
   world.Load_World(atlas.texture);
 
   Vector2 source;
@@ -388,7 +388,7 @@ int main() {
     }
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) and
         GetMousePosition().x < scr_width - 350) {
-      std::shared_ptr<RigidBody2D> obj = std::make_shared<RigidBody2D>();
+      std::shared_ptr<Object> obj = std::make_shared<Object>();
       int position_x = int(mouse.x / 32);
       int position_y = int(mouse.y / 32);
       obj->position = {float(position_x * 32), float(position_y * 32)};
@@ -400,7 +400,7 @@ int main() {
       world.objects.push_back(obj);
     }
     if (IsMouseButtonPressed(MOUSE_BUTTON_MIDDLE)) {
-      std::shared_ptr<RigidBody2D> obj = std::make_shared<RigidBody2D>();
+      std::shared_ptr<Object> obj = std::make_shared<Object>();
       int position_x = int(mouse.x / 32);
       int position_y = int(mouse.y / 32);
       obj->position = {float(position_x * 32), float(position_y * 32)};
@@ -414,7 +414,7 @@ int main() {
       int pointy = int(mouse.y);
       std::cout << pointx << " " << pointy << std::endl;
       for (int i = 0; i < world.objects.size(); i++) {
-        RigidBody2D obj = *world.objects[i];
+        Object obj = *world.objects[i];
         if (mouse.x > obj.position.x and
             mouse.x < obj.position.x + obj.size.x and
             mouse.y > obj.position.y and
@@ -484,7 +484,7 @@ void Game() {
   world.objects.push_back(player);
   Rectangle collision;
   Atlas atlas;
-  atlas.texture = LoadTexture("forestgroundtileset.png");
+  atlas.texture = LoadTexture("Assets/forestgroundtileset.png");
   world.Load_World(atlas.texture);
 
   while (!WindowShouldClose()) {
