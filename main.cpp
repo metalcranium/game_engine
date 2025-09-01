@@ -306,12 +306,12 @@ public:
                        : -1;
           if (collision.width < collision.height) {
             j->position.x += collision.width * sign.x;
-            j->velocity.x = 0
+            // j->velocity.x = 0;
             // j->is_grounded = false;
           } else if (collision.height < collision.width) {
             // j->is_grounded = true;
             j->position.y += collision.height * sign.y;
-            j->velocity.y = 0;
+            // j->velocity.y = 0;
           }
         }
       }
