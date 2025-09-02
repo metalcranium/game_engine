@@ -158,7 +158,6 @@ public:
     std::cout << "arrow position: " << position.x << "," << position.y << std::endl;
     rotation = angle * (180/M_PI) + 180;
     velocity = Vector2Normalize(direction - position);
-    // rotation++;
     destination.x += velocity.x * speed * delta;
     destination.y += velocity.y * speed * delta;
     // angle = atan2(velocity.y, velocity.x);
@@ -245,9 +244,9 @@ public:
   }
   void Print_World() {
     for (auto obj : objects) {
-      // std::cout << obj->position.x << " " << obj->position.y << " "
-      //           << obj->size.x << " " << obj->size.y << " " << obj->is_static
-      //           << std::endl;
+      std::cout << obj->position.x << " " << obj->position.y << " "
+                << obj->size.x << " " << obj->size.y << " " << obj->is_static
+                << std::endl;
       // std::cout << obj->rotation << std::endl;
     }
   }
@@ -287,7 +286,7 @@ public:
     }
   }
 };
-class Editor {};
+// Nearly pointless forward declaration
 void Draw_Grid(World world);
 void Game();
 bool Is_Hovered(Rectangle body, Vector2 mouse) {
@@ -335,6 +334,7 @@ void editor() {
 
   while (!WindowShouldClose()) {
     // update
+    // std::cout << "tiles: " << world.objects.size() << std::endl; 
     Vector2 mouse = GetScreenToWorld2D(GetMousePosition(), camera);
     // std::cout << mouse.x/32 << "," << mouse.y/32 << std::endl;
     world.Update();
@@ -361,6 +361,7 @@ void editor() {
       int position_x = int(mouse.x / 32);
       int position_y = int(mouse.y / 32);
       obj->position = {float(position_x * 32), float(position_y * 32)};
+      std::cout << obj->position.x << "," << obj->position.y << std::endl;
       obj->size = {32, 32};
       // obj->color = RED;
       obj->source = {source.x, source.y, 32, 32};
@@ -390,7 +391,7 @@ void editor() {
             mouse.y < obj.position.y + obj.size.y) {
           //   std::cout << "position: " << obj.position.x << "," <<
           //   obj.position.y << std::endl;
-          std::cout << i << std::endl;
+          // std::cout << i << std::endl;
           world.objects.erase(world.objects.begin() + i);
         }
       }
