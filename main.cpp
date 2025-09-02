@@ -41,40 +41,6 @@ struct AnimationPlayer {
     frames = frs;
   }
 };
-// class Object {
-// public:
-//   Vector2 velocity;
-//   Vector2 position;
-//   Vector2 size;
-//   Rectangle collider;
-//   Color color;
-//   bool is_static;
-//   bool is_grounded;
-//   float mass;
-//   float speed;
-//   float fall;
-//   Rectangle source;
-//   Texture atlas_texture;
-//   Texture texture;
-//   Texture idle_texture;
-
-//   Object() {
-//     velocity = {0, 0};
-//     size = {32, 32};
-//     fall = gravity;
-//   }
-//   virtual void update() {
-//     position.y += velocity.y * speed * delta;
-//     collider = {position.x, position.y, size.x, size.y};
-
-//     if (is_static) {
-//       velocity = {0, 0};
-//     } else {
-//       velocity += {0, 5 * delta};
-//     }
-//   }
-//   virtual void draw() { DrawTextureRec(texture, source, position, WHITE); }
-// };
 class Player : public Object {
 public:
   const float SPEED = 100;
