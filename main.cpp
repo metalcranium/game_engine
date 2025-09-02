@@ -383,8 +383,8 @@ void editor() {
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) and
         GetMousePosition().x >= scr_width - 350) {
       // subtracted 26 for offset
-      source = {(GetMousePosition().x / 32 - 29) * 32,
-                (GetMousePosition().y / 32) * 32};
+      source = {float((GetMouseX() / 32 - 29)) * 32,
+                (float(GetMouseY() / 32)) * 32};
       std::cout << "source: " << source.x << "," << source.y << std::endl;
     }
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) and
