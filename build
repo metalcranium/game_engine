@@ -1,6 +1,7 @@
 #! /bin/bash
 
 zig c++ -o main main.cpp \
+object.cpp \
 -lraylib \
 
 ./main

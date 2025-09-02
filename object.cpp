@@ -1,8 +1,12 @@
 #include "object.h"
 
-Object::Object(){}
+Object::Object(){
+	ready();
+}
 Object::~Object(){}
 void Object::ready(){
+	velocity = {0,0};
+	size = {32,32};
 }
 void Object::update(){
 	position.x += velocity.x * speed * GetFrameTime();

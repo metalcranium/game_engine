@@ -5,6 +5,7 @@
 #include <raymath.h>
 #include <cmath>
 #include <vector>
+#include "object.h"
 
 #define delta GetFrameTime()
 #define gravity 200
@@ -40,40 +41,40 @@ struct AnimationPlayer {
     frames = frs;
   }
 };
-class Object {
-public:
-  Vector2 velocity;
-  Vector2 position;
-  Vector2 size;
-  Rectangle collider;
-  Color color;
-  bool is_static;
-  bool is_grounded;
-  float mass;
-  float speed;
-  float fall;
-  Rectangle source;
-  Texture atlas_texture;
-  Texture texture;
-  Texture idle_texture;
+// class Object {
+// public:
+//   Vector2 velocity;
+//   Vector2 position;
+//   Vector2 size;
+//   Rectangle collider;
+//   Color color;
+//   bool is_static;
+//   bool is_grounded;
+//   float mass;
+//   float speed;
+//   float fall;
+//   Rectangle source;
+//   Texture atlas_texture;
+//   Texture texture;
+//   Texture idle_texture;
 
-  Object() {
-    velocity = {0, 0};
-    size = {32, 32};
-    fall = gravity;
-  }
-  virtual void update() {
-    position.y += velocity.y * speed * delta;
-    collider = {position.x, position.y, size.x, size.y};
+//   Object() {
+//     velocity = {0, 0};
+//     size = {32, 32};
+//     fall = gravity;
+//   }
+//   virtual void update() {
+//     position.y += velocity.y * speed * delta;
+//     collider = {position.x, position.y, size.x, size.y};
 
-    if (is_static) {
-      velocity = {0, 0};
-    } else {
-      velocity += {0, 5 * delta};
-    }
-  }
-  virtual void draw() { DrawTextureRec(texture, source, position, WHITE); }
-};
+//     if (is_static) {
+//       velocity = {0, 0};
+//     } else {
+//       velocity += {0, 5 * delta};
+//     }
+//   }
+//   virtual void draw() { DrawTextureRec(texture, source, position, WHITE); }
+// };
 class Player : public Object {
 public:
   const float SPEED = 100;
@@ -182,12 +183,13 @@ public:
     texture = LoadTexture("Assets/arrow.png");
     source = {0, 0, 32, 32};
     speed = 300;
-    std::cout << position.x << "," << position.y << std::endl;
+    std::cout << "arrow position: " << position.x << "," << position.y << std::endl;
 
   }
   ~Arrow() {}
   void update() {
-
+    
+    std::cout << "arrow position: " << position.x << "," << position.y << std::endl;
     rotation = angle * (180/M_PI) + 180;
     velocity = Vector2Normalize(direction - position);
     // rotation++;
@@ -270,7 +272,7 @@ public:
       obj->source = {sourcex, sourcey, 32, 32};
       obj->is_static = solid;
       obj->texture = texture;
-      obj->color = RED;
+      // obj->color = RED;
       objects.push_back(obj);
     }
     file.close();
@@ -383,8 +385,8 @@ void editor() {
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) and
         GetMousePosition().x >= scr_width - 350) {
       // subtracted 26 for offset
-      source = {float((GetMouseX() / 32 - 29)) * 32,
-                (float(GetMouseY() / 32)) * 32};
+      source = {float(GetMouseX() / 32 - 29) * 32,
+                float(GetMouseY() / 32) * 32};
       std::cout << "source: " << source.x << "," << source.y << std::endl;
     }
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) and
@@ -394,7 +396,7 @@ void editor() {
       int position_y = int(mouse.y / 32);
       obj->position = {float(position_x * 32), float(position_y * 32)};
       obj->size = {32, 32};
-      obj->color = RED;
+      // obj->color = RED;
       obj->source = {source.x, source.y, 32, 32};
       obj->texture = atlas.texture;
       obj->is_static = true;
@@ -406,7 +408,7 @@ void editor() {
       int position_y = int(mouse.y / 32);
       obj->position = {float(position_x * 32), float(position_y * 32)};
       obj->size = {32, 32};
-      obj->color = YELLOW;
+      // obj->color = YELLOW;
       obj->is_static = false;
       world.objects.push_back(obj);
     }
@@ -520,5 +522,24 @@ void Game() {
   CloseWindow();
 }
 int main(){
-  editor();
+  int choice;
+  std::cout << "(1) for editor\n";
+  std::cout << "(2) for game\n";
+  std::cout << "(0) to exit\n";
+  std::cout << "choice: ";
+  std::cin >> choice;
+
+  if (choice == 1){
+    editor();
+  }
+  else if (choice == 2){
+    Game();
+  }
+  else if (choice == 0){
+    return 0;
+  }
+  else {
+    std::cout << "invalid input. please try again!" << std::endl;
+    main();
+  }
 }

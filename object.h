@@ -7,14 +7,16 @@ class Object {
 			Vector2 position;
 			Vector2 size;
 			Rectangle collider;
+			Color color;
 			Rectangle source;
+			bool is_static;
+			bool is_grounded;
 			float speed;
 			float mass;
 			float fall;
-			Texture atlas;
+			Texture atlas_texture;
+			Texture idle_texture;
 			Texture texture;
-			bool is_static;
-			bool is_grounded;
 
 			Object();
 			~Object();
