@@ -55,7 +55,7 @@ public:
     size = {32, 32};
     mass = 6;
     fall = gravity;
-    speed = {SPEED, fall};
+    speed = {SPEED, SPEED};
     collider = {position.x, position.y, size.x, size.y};
     is_grounded = false;
     can_jump = false;
@@ -149,13 +149,13 @@ public:
     texture = LoadTexture("Assets/arrow.png");
     source = {0, 0, 32, 32};
     speed = 300;
-    std::cout << "arrow position: " << position.x << "," << position.y << std::endl;
+    // std::cout << "arrow position: " << position.x << "," << position.y << std::endl;
 
   }
   ~Arrow() {}
   void update() {
     
-    std::cout << "arrow position: " << position.x << "," << position.y << std::endl;
+    // std::cout << "arrow position: " << position.x << "," << position.y << std::endl;
     rotation = angle * (180/M_PI) + 180;
     velocity = Vector2Normalize(direction - position);
     destination.x += velocity.x * speed * delta;
