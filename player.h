@@ -3,10 +3,11 @@
 #include "item.h"
 #include <memory>
 #include <vector>
-class Player : Character{
+
+class Player : public Character{
   public:
     std::vector<Item>inventory;
-    std::vector<Item>equipt;
+    std::vector<Item>equipped;
     std::vector<Item>tool_bar;
     Player();
     ~Player();

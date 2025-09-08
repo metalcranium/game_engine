@@ -1,5 +1,6 @@
 #pragma once
 #include "object.h"
+#include "animationplayer.h"
 
 class Character : public Object{
   public:
@@ -9,6 +10,7 @@ class Character : public Object{
     int max_mana;
     int damage;
     int armor;
+    AnimationPlayer* animation;
 
     Character();
     ~Character();

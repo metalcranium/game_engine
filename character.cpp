@@ -12,3 +12,6 @@ void Character::ready(){
 void Character::update(){
   
 }
+void Character::draw(){
+  
+}

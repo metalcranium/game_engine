@@ -1,22 +1,36 @@
 #include "player.h"
+#include "animationplayer.h"
 #include <raylib.h>
+#include <raymath.h>
 
+#define delta GetFrameTime()
 Player::Player(){
   ready();
 }
 Player::~Player(){
-  
+  delete animation;
 }void Player::ready(){
   velocity = {0,0};
   position = {0,0};
   size = {32,32};
   speed = 200;
-  atlas = LoadTexture("Assets/herowalk.png");
-  texture = LoadTexture("Assets/hero.png");
+  atlas_texture = LoadTexture("Assets/herowalk.png");
+  idle_texture = LoadTexture("Assets/hero.png");
   source = {0,0, size.x, size.y};
+  animation = new(AnimationPlayer);
 }
 void Player::update(){
+    Vector2Normalize(velocity);
+    position.x += velocity.x * speed * delta;
+    position.y += velocity.y * speed * delta;
+    // std::cout << "is grounded: " << is_grounded << std::endl;
+    collider = {position.x, position.y, size.x, size.y};
+    input();
+    animation->animate(source);
   
+}
+void Player::draw(){
+  DrawTextureRec(texture, source, position, WHITE);
 }
 void Player::input(){
   if (IsKeyDown(KEY_UP)){
