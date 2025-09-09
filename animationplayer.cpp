@@ -3,6 +3,7 @@
 AnimationPlayer::AnimationPlayer() {}
 AnimationPlayer::~AnimationPlayer() {}
 float AnimationPlayer::animate(Rectangle &source) {
+	frame_speed = 10;
   frame_counter++;
 	if (frame_counter >= 60 / frame_speed){
 		frame_counter = 0;

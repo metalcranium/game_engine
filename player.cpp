@@ -35,21 +35,29 @@ void Player::draw(){
 }
 void Player::input(){
   if (IsKeyDown(KEY_UP)){
+    texture = atlas_texture;
     velocity.y = -1;
   }
   else if (IsKeyDown(KEY_DOWN)){
+    texture = atlas_texture;
     velocity.y = 1;
   }
   else {
+    texture = idle_texture;
     velocity.y = 0;
   }
   if (IsKeyDown(KEY_LEFT)){
+    texture = atlas_texture;
+    source.width = size.x;
     velocity.x = -1;
   }
   else if (IsKeyDown(KEY_RIGHT)){
+    texture = atlas_texture;
+    source.width = -size.x;
     velocity.x = 1;
   }
   else {
+    texture = idle_texture;
     velocity.x = 0;
   }
 }
