@@ -1,8 +1,8 @@
 #include "player.h"
-#include "animationplayer.h"
+#include "projectile.h"
 #include <memory>
 #include <raylib.h>
-#include <raymath.h>
+#include <iostream>
 
 #define delta GetFrameTime()
 Player::Player(){
@@ -30,12 +30,19 @@ void Player::update(){
     collider = {position.x, position.y, size.x, size.y};
     input();
     animation->animate(source);
+    for (auto i : projectiles){
+      i->update();
+    }
   
 }
 void Player::draw(){
   DrawTextureRec(texture, source, position, WHITE);
+  for (auto i : projectiles){
+    i->draw();
+  }
 }
 void Player::input(){
+  Vector2 mouse = GetMousePosition();
   if (IsKeyDown(KEY_UP)){
     texture = atlas_texture;
     velocity.y = -1;
@@ -61,5 +68,11 @@ void Player::input(){
   else {
     texture = idle_texture;
     velocity.x = 0;
+  }
+  if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+    std::shared_ptr<Projectile>arrow = std::make_shared<Projectile>(mouse,position) ;
+    arrow->texture = LoadTexture("Assets/arrow.png");
+    projectiles.push_back(arrow);
+    std::cout << projectiles.size() << std::endl;
   }
 }

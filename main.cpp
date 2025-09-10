@@ -17,36 +17,36 @@
 // force = mass * acceleration
 // kinetic energy = .5 * mass * speed^2
 
-class Projectile : public Object {
-public:
-  Vector2 origin;
-  Rectangle destination;
-  Projectile() {}
-  ~Projectile() {}
-};
-class Arrow : public Projectile {
-public:
-  Vector2 direction;
-  float rotation;
-  float angle;
+// class Projectile : public Object {
+// public:
+//   Vector2 origin;
+//   Rectangle destination;
+//   Projectile() {}
+//   ~Projectile() {}
+// };
+// class Arrow : public Projectile {
+// public:
+//   Vector2 direction;
+//   float rotation;
+//   float angle;
 
-  Arrow() {
-    texture = LoadTexture("Assets/arrow.png");
-    source = {0, 0, 32, 32};
-    speed = 300;
-  }
-  ~Arrow() {}
-  void update() {
-// to get angle values are target.y - self.y and target.x - self.x
-    rotation = angle * (180/M_PI) + 180;
-    velocity = Vector2Normalize(direction - position);
-    destination.x += velocity.x * speed * delta;
-    destination.y += velocity.y * speed * delta;
-  }
-  void draw() {
-    DrawTexturePro(texture,source,destination,origin,rotation,WHITE);
-  }
-};
+//   Arrow() {
+//     texture = LoadTexture("Assets/arrow.png");
+//     source = {0, 0, 32, 32};
+//     speed = 300;
+//   }
+//   ~Arrow() {}
+//   void update() {
+// // to get angle values are target.y - self.y and target.x - self.x
+//     rotation = angle * (180/M_PI) + 180;
+//     velocity = Vector2Normalize(direction - position);
+//     destination.x += velocity.x * speed * delta;
+//     destination.y += velocity.y * speed * delta;
+//   }
+//   void draw() {
+//     DrawTexturePro(texture,source,destination,origin,rotation,WHITE);
+//   }
+// };
 
 struct Tile {
   Vector2 position;
@@ -330,17 +330,17 @@ void Game() {
     // update
     world.Resolve_World_Collision();
     world.Update();
-    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-      std::shared_ptr<Arrow> arrow = std::make_shared<Arrow>();
+    // if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+    //   std::shared_ptr<Arrow> arrow = std::make_shared<Arrow>();
 
-      arrow->position = {player->position.x + 16, player->position.y};
-      arrow->direction = {mouse.x, mouse.y};
-      arrow->velocity = Vector2Normalize(arrow->direction - arrow->position);
-      arrow->angle = atan2(mouse.y - player->position.y, mouse.x - player->position.x);
-      arrow->destination = {0+player->position.x+16, 0+player->position.y+16, arrow->size.x, arrow->size.y };
-      arrow->origin = {arrow->size.x/2 , arrow->size.y/2};
-      world.objects.push_back(arrow);
-    }
+    //   arrow->position = {player->position.x + 16, player->position.y};
+    //   arrow->direction = {mouse.x, mouse.y};
+    //   arrow->velocity = Vector2Normalize(arrow->direction - arrow->position);
+    //   arrow->angle = atan2(mouse.y - player->position.y, mouse.x - player->position.x);
+    //   arrow->destination = {0+player->position.x+16, 0+player->position.y+16, arrow->size.x, arrow->size.y };
+    //   arrow->origin = {arrow->size.x/2 , arrow->size.y/2};
+    //   world.objects.push_back(arrow);
+    // }
     if (IsKeyPressed(KEY_F8)) {
       editor();
     }

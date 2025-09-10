@@ -12,7 +12,7 @@ class Projectile : public Object{
     float angle;
     Rectangle destination;
 
-    Projectile(Vector2 mouse_position, Object object);
+    Projectile(Vector2 mouse_position, Vector2 object);
     ~Projectile();
     void update();
     void draw();

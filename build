@@ -3,6 +3,7 @@
 zig c++ -o main main.cpp \
 object.cpp \
 player.cpp character.cpp animationplayer.cpp \
+projectile.cpp \
 -lraylib \
 
 ./main
