@@ -1,6 +1,7 @@
 #pragma once
 #include "object.h"
 #include "animationplayer.h"
+#include <memory>
 
 class Character : public Object{
   public:
@@ -10,7 +11,8 @@ class Character : public Object{
     int max_mana;
     int damage;
     int armor;
-    AnimationPlayer* animation;
+    // AnimationPlayer* animation;
+    std::unique_ptr<AnimationPlayer>animation;
 
     Character();
     ~Character();

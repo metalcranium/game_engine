@@ -1,5 +1,6 @@
 #include "player.h"
 #include "animationplayer.h"
+#include <memory>
 #include <raylib.h>
 #include <raymath.h>
 
@@ -8,7 +9,7 @@ Player::Player(){
   ready();
 }
 Player::~Player(){
-  delete animation;
+  // delete animation;
 }void Player::ready(){
   velocity = {0,0};
   position = {0,0};
@@ -18,7 +19,8 @@ Player::~Player(){
   idle_texture = LoadTexture("Assets/hero.png");
   texture = idle_texture;
   source = {0,0, size.x, size.y};
-  animation = new(AnimationPlayer);
+  // animation = new(AnimationPlayer);
+  animation = std::make_unique<AnimationPlayer>();
 }
 void Player::update(){
     Vector2Normalize(velocity);

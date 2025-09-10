@@ -7,7 +7,6 @@
 #include <vector>
 #include "object.h"
 #include "player.h"
-#include "animationplayer.h"
 
 #define delta GetFrameTime()
 #define gravity 200
@@ -35,29 +34,17 @@ public:
     texture = LoadTexture("Assets/arrow.png");
     source = {0, 0, 32, 32};
     speed = 300;
-    // std::cout << "arrow position: " << position.x << "," << position.y << std::endl;
-
   }
   ~Arrow() {}
   void update() {
-    
-    // std::cout << "arrow position: " << position.x << "," << position.y << std::endl;
+// to get angle values are target.y - self.y and target.x - self.x
     rotation = angle * (180/M_PI) + 180;
     velocity = Vector2Normalize(direction - position);
     destination.x += velocity.x * speed * delta;
     destination.y += velocity.y * speed * delta;
-    // angle = atan2(velocity.y, velocity.x);
-    // if (angle < 0){
-    //   angle += 2 * PI;
-    // }
-    // rotation = fmod(angle, 2*PI);
-    // rotation = -angle;
-
-        // std::cout << "rotation: " << rotation << std::endl;
   }
   void draw() {
     DrawTexturePro(texture,source,destination,origin,rotation,WHITE);
-    // DrawTextureEx(texture, position, rotation, 1, WHITE);
   }
 };
 
@@ -141,7 +128,6 @@ public:
     bool collided;
     Rectangle collision;
     for (auto i : objects) {
-      // std::cout << sign.x << "," << sign.y << std::endl;
       for (auto j : objects) {
         if (i == j) {
           break;
@@ -159,12 +145,8 @@ public:
                        : -1;
           if (collision.width < collision.height) {
             j->position.x += collision.width * sign.x;
-            // j->velocity.x = 0;
-            // j->is_grounded = false;
           } else if (collision.height < collision.width) {
-            // j->is_grounded = true;
             j->position.y += collision.height * sign.y;
-            // j->velocity.y = 0;
           }
         }
       }
@@ -236,7 +218,7 @@ void editor() {
     }
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) and
         GetMousePosition().x >= scr_width - 350) {
-      // subtracted 26 for offset
+      // subtracted for offset of Atlas
       source = {float(GetMouseX() / 32 - 29) * 32,
                 float(GetMouseY() / 32) * 32};
       std::cout << "source: " << source.x << "," << source.y << std::endl;
@@ -275,10 +257,7 @@ void editor() {
             mouse.x < obj.position.x + obj.size.x and
             mouse.y > obj.position.y and
             mouse.y < obj.position.y + obj.size.y) {
-          //   std::cout << "position: " << obj.position.x << "," <<
-          //   obj.position.y << std::endl;
-          // std::cout << i << std::endl;
-          world.objects.erase(world.objects.begin() + i);
+            world.objects.erase(world.objects.begin() + i);
         }
       }
     }
@@ -360,7 +339,6 @@ void Game() {
       arrow->angle = atan2(mouse.y - player->position.y, mouse.x - player->position.x);
       arrow->destination = {0+player->position.x+16, 0+player->position.y+16, arrow->size.x, arrow->size.y };
       arrow->origin = {arrow->size.x/2 , arrow->size.y/2};
-      // std::cout << arrow->angle << std::endl;
       world.objects.push_back(arrow);
     }
     if (IsKeyPressed(KEY_F8)) {
