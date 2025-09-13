@@ -2,16 +2,14 @@
 #include <raymath.h>
 #include <iostream>
 #include "utility.h"
-Projectile::Projectile(Vector2 mouse, Vector2 object){
+Projectile::Projectile(Vector2 mouse, Vector2 shooter){
   speed = 300;
-  position = {object.x + 16, object.y};
+  position = {shooter.x + 16, shooter.y};
   direction = {mouse.x, mouse.y};
   velocity = Vector2Normalize(direction - position);
-  // angle = atan2(mouse.y - object.y, mouse.x - object.x);
-  angle = Get_Angle(mouse, object);
-  // rotation = angle * (180/M_PI) + 180;
-  rotation = Direction_To(mouse, object);
-  destination = {0+object.x+16, 0+object.y+16, size.x, size.y};
+  angle = Get_Angle(mouse, shooter);
+  rotation = Direction_To(mouse, shooter);
+  destination = {0+shooter.x+16, 0+shooter.y+16, size.x, size.y};
   origin = {size.x/2, size.y/2};
   texture = LoadTexture("Assets/arrow.png");
   source = {0,0,32,32};

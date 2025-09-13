@@ -1,4 +1,5 @@
 #include "arrow.h"
+#include "projectile.h"
 
 Arrow::Arrow(){
   texture = LoadTexture("Assets/arrow.png");
