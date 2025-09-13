@@ -1,6 +1,6 @@
 #pragma once
 #include "character.h"
-#include "item.h"
+// #include "item.h"
 #include <memory>
 #include <vector>
 #include "animationplayer.h"
@@ -10,9 +10,9 @@
 
 class Player : public Character{
   public:
-    std::vector<Item>inventory;
-    std::vector<Item>equipped;
-    std::vector<Item>tool_bar;
+    // std::vector<Item>inventory;
+    // std::vector<Item>equipped;
+    // std::vector<Item>tool_bar;
     std::vector<std::shared_ptr<Projectile>>projectiles;
     Player();
     ~Player();

@@ -19,7 +19,6 @@ Player::~Player(){
   idle_texture = LoadTexture("Assets/hero.png");
   texture = idle_texture;
   source = {0,0, size.x, size.y};
-  // animation = new(AnimationPlayer);
   animation = std::make_unique<AnimationPlayer>();
 }
 void Player::update(){
