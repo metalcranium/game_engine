@@ -6,10 +6,11 @@ Projectile::Projectile(Vector2 mouse, Vector2 shooter){
   speed = 300;
   position = {shooter.x + 16, shooter.y};
   // Direction is used to normalize the velocity of the projectiles travel.
-  direction = {mouse.x, mouse.y};
-  // velocity = Vector2Normalize(direction - position);
+  // But normalizeing the velocity may be suitable.
+  // direction = {mouse.x, mouse.y};
+  velocity = Vector2Normalize(mouse - Vector2{shooter.x + 16, shooter.y + 16});
   // Having a seperate variable for the angle may not be necessary.
-  // but i'm leaving it in for now.
+  // but i'm leaving it in and commented for now.
   // angle = Get_Angle(mouse, shooter);
   rotation = Direction_To(mouse, shooter);
   // Where we want the sprite to be drawn.
@@ -18,7 +19,6 @@ Projectile::Projectile(Vector2 mouse, Vector2 shooter){
   // The point where the projectile rotates.
   // In this case is the center of the projctile.
   origin = {size.x/2, size.y/2};
-  texture = LoadTexture("Assets/arrow.png");
   source = {0,0,32,32};
 
   std::cout << position.x << "," << position.y << std::endl;
@@ -32,8 +32,7 @@ Projectile::~Projectile(){
   // std::cout << "projectile destroyed" << std::endl;
 }
 void Projectile::update(){
-  // rotation = angle * (180/M_PI) + 180;
-  velocity = Vector2Normalize(direction - position);
+  // velocity = Vector2Normalize(direction - position);
   destination.x += velocity.x * speed * GetFrameTime();
   destination.y += velocity.y * speed * GetFrameTime();
   std::cout << position.x << "," << position.y << std::endl;

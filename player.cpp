@@ -70,7 +70,7 @@ void Player::input(){
   }
   if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
     std::shared_ptr<Projectile>arrow = std::make_shared<Projectile>(mouse,position) ;
-    // arrow->texture = LoadTexture("Assets/fireball.png");
+    arrow->texture = LoadTexture("Assets/fireball.png");
     projectiles.push_back(arrow);
     std::cout << projectiles.size() << std::endl;
   }
