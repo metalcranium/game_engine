@@ -1,7 +1,4 @@
 #include "player.h"
-#include "projectile.h"
-#include <memory>
-#include <raylib.h>
 #include <iostream>
 
 // TODO:
@@ -18,7 +15,7 @@ Player::~Player(){
   position = {0,0};
   size = {32,32};
   speed = 200;
-  atlas_texture = LoadTexture("Assets/herowalk.png");
+  atlas_texture = LoadTexture("Assets/hero.png");
   idle_texture = LoadTexture("Assets/hero.png");
   texture = idle_texture;
   source = {0,0, size.x, size.y};
@@ -31,7 +28,7 @@ void Player::update(){
     // std::cout << "is grounded: " << is_grounded << std::endl;
     collider = {position.x, position.y, size.x, size.y};
     input();
-    animation->animate(source);
+    animation->animate(source, 10, 5);
     for (auto i : projectiles){
       i->update();
     }
@@ -39,8 +36,8 @@ void Player::update(){
 }
 void Player::draw(){
   DrawTextureRec(texture, source, position, WHITE);
-  for (auto i : projectiles){
-    i->draw();
+  if (projectiles.size() > 0){
+    draw_projectiles();
   }
 }
 void Player::input(){
@@ -76,5 +73,10 @@ void Player::input(){
     arrow->texture = LoadTexture("Assets/fireball.png");
     projectiles.push_back(arrow);
     std::cout << projectiles.size() << std::endl;
+  }
+}
+void Player::draw_projectiles(){
+  for (auto i : projectiles){
+    i->draw();
   }
 }

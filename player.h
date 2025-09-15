@@ -20,4 +20,5 @@ class Player : public Character{
     void update() override;
     void draw() override;
     void input();
+    void draw_projectiles();
 };

@@ -1,9 +1,13 @@
 #include "animationplayer.h"
+#include <iostream>
 
 AnimationPlayer::AnimationPlayer() {}
-AnimationPlayer::~AnimationPlayer() {}
-float AnimationPlayer::animate(Rectangle &source) {
-	frame_speed = 10;
+AnimationPlayer::~AnimationPlayer() {
+	std::cout << "animation deleted" << std::endl;
+}
+float AnimationPlayer::animate(Rectangle &source, int fr_speed, int frs) {
+	frame_speed = fr_speed;
+	frames = frs;
   frame_counter++;
 	if (frame_counter >= 60 / frame_speed){
 		frame_counter = 0;
