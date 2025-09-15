@@ -4,6 +4,9 @@
 #include <raylib.h>
 #include <iostream>
 
+// TODO:
+//for some reason the drawing of the player is screwed up.
+
 #define delta GetFrameTime()
 Player::Player(){
   ready();
