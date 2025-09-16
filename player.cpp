@@ -15,11 +15,12 @@ Player::~Player(){
   position = {0,0};
   size = {32,32};
   speed = 200;
-  atlas_texture = LoadTexture("Assets/hero.png");
+  atlas_texture = LoadTexture("Assets/herowalk.png");
   idle_texture = LoadTexture("Assets/hero.png");
   texture = idle_texture;
   source = {0,0, size.x, size.y};
   animation = std::make_unique<AnimationPlayer>();
+  animation->update(10, 6);
 }
 void Player::update(){
     Vector2Normalize(velocity);
@@ -28,7 +29,8 @@ void Player::update(){
     // std::cout << "is grounded: " << is_grounded << std::endl;
     collider = {position.x, position.y, size.x, size.y};
     input();
-    animation->animate(source, 10, 5);
+    animation->animate(source);
+    // animation->update(10, 6);
     for (auto i : projectiles){
       i->update();
     }

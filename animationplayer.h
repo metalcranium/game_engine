@@ -10,6 +10,6 @@ struct AnimationPlayer {
   AnimationPlayer();
   ~AnimationPlayer();
 
-  float animate(Rectangle &source, int fr_speed, int frs);
+  float animate(Rectangle &source);
   void update(int fr_speed, int frs);
 };
