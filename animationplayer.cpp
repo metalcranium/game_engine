@@ -15,7 +15,7 @@ float AnimationPlayer::animate(Rectangle &source) {
 		frame_counter = 0;
 		current_frame++;
 
-		source.x = float(current_frame) * 32;
+		source.x = float(current_frame) * source.width;
 		if (current_frame >= frames){
 			current_frame = 0;
 		}
