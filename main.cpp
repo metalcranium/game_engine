@@ -158,8 +158,8 @@ void Editor() {
                            -float(viewport.texture.height)};
 
   World world;
-  world.grid_count = (scr_width / 32) + (scr_height / 32);
   world.grid_size = 32;
+  world.grid_count = (scr_width / world.grid_size) + (scr_height / world.grid_size);
 
   std::cout << "count: " << world.objects.size() << std::endl;
 
@@ -189,16 +189,18 @@ void Editor() {
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) and
         GetMousePosition().x >= scr_width - 350) {
       // subtracted for offset of Atlas
-      source = {float(GetMouseX() / 32 - 29) * 32,
-                float(GetMouseY() / 32) * 32};
+      // TODO: need scalable number instead of 29 because it messes up
+      // if you change the screen size.
+      source = {float(GetMouseX() / int(world.grid_size) - 29) * world.grid_size,
+                float(GetMouseY() / int(world.grid_size)) * world.grid_size};
       std::cout << "source: " << source.x << "," << source.y << std::endl;
     }
     if (IsMouseButtonDown(MOUSE_BUTTON_LEFT) and
         GetMousePosition().x < scr_width - 350) {
-      int position_x = int(mouse.x / 32);
-      int position_y = int(mouse.y / 32);
+      int position_x = int(mouse.x / world.grid_size);
+      int position_y = int(mouse.y / world.grid_size);
       for (int i = 0; i < world.objects.size(); i++){
-        if (world.objects[i]->position.x == position_x * 32 && world.objects[i]->position.y == position_y * 32){
+        if (world.objects[i]->position.x == position_x * world.grid_size && world.objects[i]->position.y == position_y * world.grid_size){
           world.objects.erase(world.objects.begin() + i);
         }
       }
@@ -215,9 +217,9 @@ void Editor() {
     }
     if (IsMouseButtonDown(MOUSE_BUTTON_MIDDLE)) {
       std::shared_ptr<Object> obj = std::make_shared<Object>();
-      int position_x = int(mouse.x / 32);
-      int position_y = int(mouse.y / 32);
-      obj->position = {float(position_x * 32), float(position_y * 32)};
+      int position_x = int(mouse.x / world.grid_size);
+      int position_y = int(mouse.y / world.grid_size);
+      obj->position = {float(position_x * world.grid_size), float(position_y * world.grid_size)};
       obj->size = {32, 32};
       // obj->color = YELLOW;
       obj->is_static = false;
