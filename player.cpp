@@ -20,7 +20,7 @@ Player::~Player(){
   texture = idle_texture;
   source = {0,0, size.x, size.y};
   animation = std::make_unique<AnimationPlayer>();
-  animation->update(10, 6);
+  animation->update(10, 4);
 }
 void Player::update(){
     Vector2Normalize(velocity);
