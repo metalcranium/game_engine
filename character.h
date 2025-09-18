@@ -11,6 +11,7 @@ class Character : public Object{
     int max_mana;
     int damage;
     int armor;
+    Texture weapon_socket;
     // AnimationPlayer* animation;
     std::unique_ptr<AnimationPlayer>animation;
 

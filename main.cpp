@@ -58,6 +58,7 @@ public:
       file << "\n";
     }
     file.close();
+    std::cout << "world saved" << std::endl;
   }
   void Load_World(Texture &texture) {
     std::ifstream file;
@@ -82,6 +83,7 @@ public:
       objects.push_back(obj);
     }
     file.close();
+    std::cout << "world loaded" << std::endl;
   }
   void Print_World() {
     for (auto obj : objects) {
@@ -193,11 +195,17 @@ void Editor() {
     }
     if (IsMouseButtonDown(MOUSE_BUTTON_LEFT) and
         GetMousePosition().x < scr_width - 350) {
-      std::shared_ptr<Object> obj = std::make_shared<Object>();
       int position_x = int(mouse.x / 32);
       int position_y = int(mouse.y / 32);
+      for (int i = 0; i < world.objects.size(); i++){
+        if (world.objects[i]->position.x == position_x * 32 && world.objects[i]->position.y == position_y * 32){
+          world.objects.erase(world.objects.begin() + i);
+        }
+      }
+      std::cout << "objects size: " << world.objects.size() << std::endl;
+      std::shared_ptr<Object> obj = std::make_shared<Object>();
       obj->position = {float(position_x * 32), float(position_y * 32)};
-      std::cout << obj->position.x << "," << obj->position.y << std::endl;
+      // std::cout << obj->position.x << "," << obj->position.y << std::endl;
       obj->size = {32, 32};
       // obj->color = RED;
       obj->source = {source.x, source.y, 32, 32};
@@ -218,7 +226,7 @@ void Editor() {
     if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT)) {
       int pointx = int(mouse.x);
       int pointy = int(mouse.y);
-      std::cout << pointx << " " << pointy << std::endl;
+      // std::cout << pointx << " " << pointy << std::endl;
       for (int i = 0; i < world.objects.size(); i++) {
         Object obj = *world.objects[i];
         if (mouse.x > obj.position.x and
@@ -228,6 +236,8 @@ void Editor() {
             world.objects.erase(world.objects.begin() + i);
         }
       }
+      std::cout << "objects size: " << world.objects.size() << std::endl;
+
     }
     // runs the game from inside the editor in separate window
     if (IsKeyPressed(KEY_F5)) {
@@ -292,10 +302,6 @@ void Game() {
 
   while (!WindowShouldClose()) {
     Vector2 mouse = GetMousePosition();
-    // float angle = std::atan2(mouse.y - player->position.y, mouse.x - player->position.x);
-    // float rotation = angle * (180/M_PI) + 180 ;
-    // std::cout << "angle: " << rotation << std::endl;
-
     // update
     world.Resolve_World_Collision();
     world.Update();
