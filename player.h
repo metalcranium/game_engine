@@ -7,12 +7,13 @@
 #include "raylib.h"
 #include "raymath.h"
 #include "projectile.h"
+#include "item.h"
 
 class Player : public Character{
   public:
-    // std::vector<Item>inventory;
-    // std::vector<Item>equipped;
-    // std::vector<Item>tool_bar;
+    std::vector<Item>inventory;
+    std::vector<Item>equipped;
+    std::vector<Item>tool_bar;
     std::vector<std::shared_ptr<Projectile>>projectiles;
     Player();
     ~Player();

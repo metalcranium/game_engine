@@ -3,7 +3,6 @@
 #include <memory>
 #include <raylib.h>
 #include <raymath.h>
-#include <cmath>
 #include <vector>
 #include "object.h"
 #include "player.h"
@@ -113,9 +112,9 @@ public:
                        ? 1
                        : -1;
           if (collision.width < collision.height) {
-            j->position.x += collision.width * sign.x;
+            // j->position.x += collision.width * sign.x;
           } else if (collision.height < collision.width) {
-            j->position.y += collision.height * sign.y;
+            // j->position.y += collision.height * sign.y;
           }
         }
       }
@@ -192,7 +191,7 @@ void Editor() {
                 float(GetMouseY() / 32) * 32};
       std::cout << "source: " << source.x << "," << source.y << std::endl;
     }
-    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) and
+    if (IsMouseButtonDown(MOUSE_BUTTON_LEFT) and
         GetMousePosition().x < scr_width - 350) {
       std::shared_ptr<Object> obj = std::make_shared<Object>();
       int position_x = int(mouse.x / 32);
@@ -206,7 +205,7 @@ void Editor() {
       obj->is_static = true;
       world.objects.push_back(obj);
     }
-    if (IsMouseButtonPressed(MOUSE_BUTTON_MIDDLE)) {
+    if (IsMouseButtonDown(MOUSE_BUTTON_MIDDLE)) {
       std::shared_ptr<Object> obj = std::make_shared<Object>();
       int position_x = int(mouse.x / 32);
       int position_y = int(mouse.y / 32);
@@ -216,7 +215,7 @@ void Editor() {
       obj->is_static = false;
       world.objects.push_back(obj);
     }
-    if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
+    if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT)) {
       int pointx = int(mouse.x);
       int pointy = int(mouse.y);
       std::cout << pointx << " " << pointy << std::endl;
@@ -283,12 +282,13 @@ void Game() {
   World world;
   world.grid_count = 25;
   world.grid_size = 32;
-  std::shared_ptr<Player> player = std::make_shared<Player>();
-  world.objects.push_back(player);
   Rectangle collision;
   Atlas atlas;
   atlas.texture = LoadTexture("Assets/forestgroundtileset.png");
   world.Load_World(atlas.texture);
+  std::shared_ptr<Player> player = std::make_shared<Player>();
+  world.objects.push_back(player);
+
 
   while (!WindowShouldClose()) {
     Vector2 mouse = GetMousePosition();
@@ -331,4 +331,7 @@ int main(){
     std::cout << "invalid input. please try again!" << std::endl;
     main();
   }
+  // this is only need for running the cosmic desktop beause the issues that
+  // cosmic has with glfw windows
+  // system("cosmic-comp");
 }

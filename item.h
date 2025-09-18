@@ -8,10 +8,13 @@ class Item{
     Vector2 size; 
     int count;
     int max_stack;
+    Rectangle pickup_range;
     Texture texture;
+    bool is_on_ground;
 
     Item();
     ~Item();
 
-    void use();
+    void draw();
+    virtual void use();
 };
